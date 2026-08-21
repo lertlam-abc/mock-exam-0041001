@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจำลองทำข้อสอบ 0041001 PREPARATORY ENGLISH</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #2c3e50;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
+        .blueprint-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .blueprint-card h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .controls {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .timer-box {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: #edf2f7;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .score-box {
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-submit {
+            background: var(--success);
+        }
+
+        .btn-submit:hover {
+            background: #27ae60;
+        }
+
+        .btn-reset {
+            background: #7f8c8d;
+        }
+
+        .btn-reset:hover {
+            background: #95a5a6;
+        }
+
+        .question-card {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .question-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            background: #f0f4f8;
+        }
+
+        .option-label input {
+            margin-right: 0.75rem;
+        }
+
+        .explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: #f8fafc;
+            border-left: 4px solid var(--accent);
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .correct {
+            background: #e8f8f5 !important;
+            border-color: var(--success) !important;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            background: #fdf2e9 !important;
+            border-color: var(--danger) !important;
+            color: #c0392b;
+        }
+
+        .unit-header {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .timer-box {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>0041001 PREPARATORY ENGLISH</h1>
+    <p>แบบฟอร์มจำลองสอบกลางภาค (Midterm Mock Exam) - 100 ข้อ</p>
+    <p>ภาคเรียนที่ 1 ปีการศึกษา 2569 | อ้างอิงเนื้อหา พี่มาเตย (P'Matoey)</p>
+</header>
+
+<div class="container">
+    <div class="controls">
+        <div class="timer-box">⏱️ เวลาที่ใช้: <span id="timer">00:00</span></div>
+        <div class="score-box" id="scoreDisplay">คะแนนของคุณ: <span id="score">0</span> / 100</div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-submit" onclick="submitExam()">ส่งข้อสอบ</button>
+            <button class="btn btn-reset" onclick="resetExam()">ทำใหม่</button>
+        </div>
+    </div>
+
+    <div id="examForm">
+        <!-- Questions will be dynamically inserted here -->
+    </div>
+</div>
+
+<script>
+    // Data parsing
+    const questionsData = [
+        // Unit 1
+        { id: 1, unit: "UNIT 1: LIFESTYLE", text: "After working long hours at the office desk, I often feel ________ and fall asleep early.", options: ["A. early", "B. tired", "C. break", "D. home late"], ans: "B", exp: "คอลโลเคชั่น feel tired แปลว่า รู้สึกเหนื่อยล้าหลังจากการทำงานหนักยาวนาน" },
+        { id: 2, unit: "UNIT 1: LIFESTYLE", text: "My friends and I usually ________ until midnight watching TV or playing games.", options: ["A. wake up", "B. stay up", "C. work long", "D. get up"], ans: "B", exp: "stay up (until midnight) คือคอลโลเคชันที่ถูกต้อง หมายถึง นอนดึกหรืออยู่จนถึงเที่ยงคืน" },
+        { id: 3, unit: "UNIT 1: LIFESTYLE", text: "During a busy day, it is important to ________ a break to relax your brain.", options: ["A. make", "B. do", "C. take", "D. work"], ans: "C", exp: "คอลโลเคชันที่ถูกต้องคือ take a break แปลว่า หยุดพัก" },
+        { id: 4, unit: "UNIT 1: LIFESTYLE", text: "The average human needs to sleep around eight hours, but many people have trouble ________ asleep.", options: ["A. falling", "B. waking", "C. staying", "D. getting"], ans: "A", exp: "คอลโลเคชัน fall asleep แปลว่า นอนหลับ หรือเริ่มหลับ" },
+        { id: 5, unit: "UNIT 1: LIFESTYLE", text: "Every morning, I ________ early at 6:00 a.m. because my class starts early.", options: ["A. stay up", "B. get home late", "C. wake up", "D. fall asleep"], ans: "C", exp: "wake up early หมายถึง ตื่นนอนตอนเช้าตรู่" },
+        { id: 6, unit: "UNIT 1: LIFESTYLE", text: "My brother ________ tennis on Saturday mornings.", options: ["A. plays always", "B. is playing always", "C. always plays", "D. always play"], ans: "C", exp: "Adverb of frequency (always) ต้องวางไว้หน้ากริยาแท้ (plays) และประธาน My brother เป็นเอกพจน์ กริยาเติม -s" },
+        { id: 7, unit: "UNIT 1: LIFESTYLE", text: "She is ________ for work. She wakes up late every day.", options: ["A. late usually", "B. usually late", "C. usually is late", "D. late is usually"], ans: "B", exp: "Adverb of frequency (usually) ต้องวางไว้หลัง Verb to be (is) เสมอ" },
+        { id: 8, unit: "UNIT 1: LIFESTYLE", text: "Bost ________ love P'Phum.", options: ["A. don't", "B. isn't", "C. doesn't", "D. aren't"], ans: "C", exp: "Bost เป็นประธานเอกพจน์ ในประโยคปฏิเสธของ Present Simple ต้องใช้ doesn't ตามด้วยกริยาช่อง 1 (love)" },
+        { id: 9, unit: "UNIT 1: LIFESTYLE", text: "How often ________ you and your family eat out in restaurants?", options: ["A. are", "B. do", "C. does", "D. is"], ans: "B", exp: "ประธาน you and your family เป็นพหูพจน์ กริยาช่วยในประโยคคำถาม Present Simple จึงต้องใช้ do" },
+        { id: 10, unit: "UNIT 1: LIFESTYLE", text: "The Okinawan people ________ buy food from a supermarket; they grow their own vegetables.", options: ["A. rarely", "B. always", "C. usually", "D. twice a week"], ans: "A", exp: "rarely แปลว่า แทบจะไม่ สอดคล้องกับเนื้อหาที่ชาวโอกินาวาแทบจะไม่ซื้ออาหารจากซูเปอร์มาร์เก็ตเพราะปลูกผักเอง" },
+        { id: 11, unit: "UNIT 1: LIFESTYLE", text: "Peter ________ to the local market every Sunday morning.", options: ["A. go", "B. is going", "C. goes", "D. went"], ans: "C", exp: "ประธาน Peter เป็นเอกพจน์ บ่งบอกความเป็นกิจวัตรประจำวัน (every Sunday) กริยา go จึงลงท้ายด้วย -es เป็น goes" },
+        { id: 12, unit: "UNIT 1: LIFESTYLE", text: "In Okinawa, many elderly people lead active lives and go ________ in the sea to catch seaweed.", options: ["A. karate", "B. yoga", "C. swimming", "D. cards"], ans: "C", exp: "go ใช้กับกีฬาหรือกิจกรรมที่ลงท้ายด้วย -ing เช่น go swimming" },
+        { id: 13, unit: "UNIT 1: LIFESTYLE", text: "My sister does ________ to relax her mind and body every evening.", options: ["A. tennis", "B. yoga", "C. running", "D. hiking"], ans: "B", exp: "does yoga เป็นคอลโลเคชันที่ถูกต้องสำหรับศิลปะการฝึกร่างกาย/การผ่อนคลาย" },
+        { id: 14, unit: "UNIT 1: LIFESTYLE", text: "The drivers pick up children early, and Okinawans never drive when they can ________.", options: ["A. go hiking", "B. walk", "C. play tennis", "D. do nothing"], ans: "B", exp: "Okinawans never drive when they can walk แปลว่า ชาวโอกินาวาไม่เคยขับรถเลยเมื่อพวกเขาสามารถเดินได้" },
+        { id: 15, unit: "UNIT 1: LIFESTYLE", text: "I usually play ________ with my friends when we meet at each other's houses.", options: ["A. cards", "B. running", "C. homework", "D. karate"], ans: "A", exp: "play ใช้กับบอร์ดเกม กีฬาประเภททีม หรือเกมอย่าง play cards" },
+        { id: 16, unit: "UNIT 1: LIFESTYLE", text: "His younger brother does ________ and has already earned a black belt.", options: ["A. football", "B. hiking", "C. karate", "D. shopping"], ans: "C", exp: "does karate เป็นคอลโลเคชันที่ถูกต้องสำหรับกีฬาต่อสู้ป้องกันตัว" },
+        { id: 17, unit: "UNIT 1: LIFESTYLE", text: "Let's go ________ this Saturday at the new shopping mall.", options: ["A. nothing", "B. shopping", "C. yoga", "D. tennis"], ans: "B", exp: "go shopping คือคอลโลเคชันที่ถูกต้อง หมายถึง ไปซื้อของ" },
+        { id: 18, unit: "UNIT 1: LIFESTYLE", text: "She is extremely good at playing ________; she has practiced since she was seven.", options: ["A. the piano", "B. running", "C. gymnastics", "D. homework"], ans: "A", exp: "play the piano เป็นการใช้ play คู่กับเครื่องดนตรีที่มี the นำหน้า" },
+        { id: 19, unit: "UNIT 1: LIFESTYLE", text: "While she is cooking, her father ________ TV.", options: ["A. is watching", "B. watches", "C. watched", "D. watch"], ans: "B", exp: "While she is cooking (กำลังทำอาหาร), her father watches TV (ดูทีวีเป็นประจำในขณะนั้น)" },
+        { id: 20, unit: "UNIT 1: LIFESTYLE", text: "When I get home, my mother ________ dinner.", options: ["A. is cooking", "B. cooks", "C. cook", "D. is cook"], ans: "A", exp: "โครงสร้าง When + Present Simple (get), Present Continuous (is cooking) แสดงว่าขณะที่ฉันกลับถึงบ้าน แม่กำลังทำอาหารอยู่พอดี" },
+        { id: 21, unit: "UNIT 1: LIFESTYLE", text: "A: Where is your sister?
+B: She ________ in the library. She has an exam tomorrow.", options: ["A. studies", "B. study", "C. is studying", "D. studied"], ans: "C", exp: "กำลังเกิดขึ้นขณะที่พูด (right now) และสอดคล้องกับความจำเป็นเพราะมีสอบพรุ่งนี้ จึงต้องใช้ Present Continuous" },
+        { id: 22, unit: "UNIT 1: LIFESTYLE", text: "My father usually ________ coffee in the morning, but today he ________ tea.", options: ["A. drinks / is drinking", "B. is drinking / drinks", "C. drink / drinks", "D. drinks / drinks"], ans: "A", exp: "เหตุการณ์แรกมี usually เป็นนิสัยประจำวันใช้ Present Simple (drinks) ส่วนครึ่งหลังมี but today แสดงความแตกต่างเฉพาะวันนี้ใช้ Present Continuous (is drinking)" },
+        { id: 23, unit: "UNIT 1: LIFESTYLE", text: "The Earth ________ around the Sun, but many people ________ about climate change these days.", options: ["A. is going / worry", "B. goes / are worrying", "C. goes / worry", "D. is going / are worrying"], ans: "B", exp: "The Earth goes around the sun เป็นความจริงตามธรรมชาติ (Present Simple) ส่วนครึ่งหลังพูดถึงสถานการณ์ที่มีการเปลี่ยนแปลงในช่วงนี้ these days ใช้ Present Continuous (are worrying)" },
+        { id: 24, unit: "UNIT 1: LIFESTYLE", text: "Please don't turn off the computer. I ________ it now.", options: ["A. use", "B. used", "C. am using", "D. uses"], ans: "C", exp: "มีคำว่า now บ่งบอกถึงเหตุการณ์ที่กำลังทำอยู่ ณ ขณะนี้ ต้องใช้ Present Continuous (am using)" },
+        { id: 25, unit: "UNIT 1: LIFESTYLE", text: "After spending hours indoors, do you often feel ________ going outside for a walk?", options: ["A. that", "B. like", "C. better", "D. tired"], ans: "B", exp: "feel like + -ing มีความหมายว่า อยากทำกิจกรรมนั้นๆ" },
+        { id: 26, unit: "UNIT 1: LIFESTYLE", text: "Many doctors feel ________ this lack of outdoor exercise is making our physical health worse.", options: ["A. better", "B. like", "C. that", "D. out"], ans: "C", exp: "feel that + clause มีความหมายว่า มีความเห็นว่า / คิดว่า" },
+        { id: 27, unit: "UNIT 1: LIFESTYLE", text: "If you work for hours at your office desk, you will feel ________ when you visit your local park.", options: ["A. better", "B. like", "C. that", "D. stress"], ans: "A", exp: "feel better หมายถึง รู้สึกดีขึ้น หรือผ่อนคลายขึ้น" },
+        { id: 28, unit: "UNIT 1: LIFESTYLE", text: "I am currently not eating any sweets and I feel ________.", options: ["A. like", "B. healthier", "C. that", "D. worse"], ans: "B", exp: "feel + adjective (healthier) บอกถึงสุขภาพที่ดีขึ้นจากการไม่กินของหวาน" },
+        { id: 29, unit: "UNIT 1: LIFESTYLE", text: "After a difficult and stressful day, what makes you feel ________ in the evening?", options: ["A. better", "B. like", "C. that", "D. worse"], ans: "A", exp: "feel better แปลว่า รู้สึกดีขึ้น" },
+        { id: 30, unit: "UNIT 1: LIFESTYLE", text: "According to the article, only ________ of teenagers in countries such as the USA spend time outside every day.", options: ["A. 5%", "B. 10%", "C. 15%", "D. 20%"], ans: "B", exp: "จากบทความ: in countries such as the USA, only 10% of teenagers spend time outside every day." },
+        { id: 31, unit: "UNIT 1: LIFESTYLE", text: "In the study by Dr. Matilda van den Bosch, what happened to the heart rates of people who sat in a 3D-virtual-reality room with pictures and sounds of nature after their math test?", options: ["A. Their heart rates became faster.", "B. Their heart rates became slower than the other group's.", "C. Their heart rates stopped beating.", "D. There was no change in their heart rates."], ans: "B", exp: "จากบทความ: Their heart rates were slower than people's in the other group." },
+        { id: 32, unit: "UNIT 1: LIFESTYLE", text: "In Toronto, researchers studied 31,000 people and found that overall, healthier people lived near ________.", options: ["A. shopping malls", "B. city centres", "C. parks", "D. offices"], ans: "C", exp: "จากบทความ: Overall, they found that healthier people lived near parks." },
+        { id: 33, unit: "UNIT 1: LIFESTYLE", text: "What is being planned in Dubai to allow shoppers to relax outside with trees and water?", options: ["A. A new forest school", "B. A new virtual reality room", "C. A new national park", "D. A new shopping mall with a large garden"], ans: "D", exp: "จากบทความ: In Dubai, there are plans for a new shopping mall with a large garden." },
+        { id: 34, unit: "UNIT 1: LIFESTYLE", text: "In Switzerland, children study their subjects outside and do a lot of exercise in popular ________.", options: ["A. forest schools", "B. virtual reality rooms", "C. national parks", "D. shopping malls"], ans: "A", exp: "จากบทความ: In some countries such as Switzerland, forest schools are popular." },
+
+        // Unit 2
+        { id: 35, unit: "UNIT 2: COMPETITIONS", text: "Runners at the Olympic Games get a gold ________ when they win a race.", options: ["A. goal", "B. points", "C. medal", "D. match"], ans: "C", exp: "Runners at the Olympic Games get a gold medal when they win a race." },
+        { id: 36, unit: "UNIT 2: COMPETITIONS", text: "A rugby ________ lasts eighty minutes while a football match lasts ninety minutes.", options: ["A. goal", "B. points", "C. medal", "D. match"], ans: "D", exp: "match ใช้เรียกการแข่งขันกีฬาอย่างรักบี้หรือฟุตบอล" },
+        { id: 37, unit: "UNIT 2: COMPETITIONS", text: "In football, there are eleven ________ on each side.", options: ["A. teams", "B. referees", "C. players", "D. spectators"], ans: "C", exp: "In football, there are eleven players on each side." },
+        { id: 38, unit: "UNIT 2: COMPETITIONS", text: "How many ________ did your team score in the game last Sunday?", options: ["A. goals", "B. race", "C. medal", "D. champion"], ans: "A", exp: "goals บ่งบอกถึงการทำประตูในการแข่งขันกีฬา" },
+        { id: 39, unit: "UNIT 2: COMPETITIONS", text: "At the beginning of the championship, there are twenty-four ________ competing.", options: ["A. goals", "B. teams", "C. players", "D. medals"], ans: "B", exp: "championship มักเริ่มต้นด้วยการมีหลาย teams เข้ามาแข่งขันร่วมกัน" },
+        { id: 40, unit: "UNIT 2: COMPETITIONS", text: "In golf, you ________ hit the ball into nine or eighteen holes.", options: ["A. don't have to", "B. have to", "C. mustn't", "D. can't"], ans: "B", exp: "ตามกฎกติกาการเล่นกอล์ฟ ถือเป็นข้อบังคับ (obligatory) ต้องใช้ have to" },
+        { id: 41, unit: "UNIT 2: COMPETITIONS", text: "Competitors ________ argue with the referee; otherwise, they will get a penalty.", options: ["A. can", "B. don't have to", "C. mustn't", "D. have to"], ans: "C", exp: "mustn't ใช้เมื่อกฎกติกาไม่อนุญาตเด็ดขาด (ห้ามทำเด็ดขาด)" },
+        { id: 42, unit: "UNIT 2: COMPETITIONS", text: "In football, a goalkeeper is the only player who ________ pick up the ball with hands.", options: ["A. has to", "B. must", "C. can", "D. don't have to"], ans: "C", exp: "can ใช้แสดงความสามารถหรือการอนุญาตตามกติกา" },
+        { id: 43, unit: "UNIT 2: COMPETITIONS", text: "Players ________ throw the ball backwards in rugby; they cannot throw it forward.", options: ["A. mustn't", "B. don't have to", "C. can't", "D. must"], ans: "D", exp: "กฎระบุชัดเจนว่าผู้เล่นจำเป็นต้องส่งบอลไปข้างหลังเท่านั้น จึงใช้ must" },
+        { id: 44, unit: "UNIT 2: COMPETITIONS", text: "A referee ________ send a player off the pitch when he breaks the rules of the game.", options: ["A. can", "B. don't have to", "C. mustn't", "D. has to"], ans: "A", exp: "ผู้ตัดสินได้รับอำนาจ/สิทธิ์ที่จะไล่ผู้เล่นออกนอกสนามได้ จึงใช้ can" },
+        { id: 45, unit: "UNIT 2: COMPETITIONS", text: "In the Beard and Moustache competition, you ________ be over eighteen years old.", options: ["A. don't have to", "B. must", "C. can't", "D. mustn't"], ans: "B", exp: "ถือเป็นไฟต์บังคับที่อายุต้องเกิน 18 ปี (must)" },
+        { id: 46, unit: "UNIT 2: COMPETITIONS", text: "There are eighteen different categories, but competitors ________ only enter one category.", options: ["A. don't have to", "B. can", "C. must", "D. have to"], ans: "B", exp: "ผู้เข้าประกวดได้รับอนุญาตให้ลงสมัครแข่งขันได้เพียง 1 ประเภท (can only enter...)" },
+        { id: 47, unit: "UNIT 2: COMPETITIONS", text: "You ________ have the longest moustache or the biggest beard to win a prize, because there are multiple categories.", options: ["A. mustn't", "B. can't", "C. don't have to", "D. have to"], ans: "C", exp: "don't have to ใช้เมื่อบางสิ่งไม่จำเป็น แต่ก็สามารถทำได้" },
+        { id: 48, unit: "UNIT 2: COMPETITIONS", text: "Lionel Messi is very famous in my country. He is a professional ________.", options: ["A. football player", "B. footballer", "C. footballist", "D. football play"], ans: "B", exp: "กีฬา football เติม suffix -er เพื่อระบุตัวผู้เล่นเป็น footballer" },
+        { id: 49, unit: "UNIT 2: COMPETITIONS", text: "A person who rides a bicycle, especially in races, is called a ________.", options: ["A. cycler", "B. cycling player", "C. cyclist", "D. cycle player"], ans: "C", exp: "cycle เติม suffix -ist เป็น cyclist" },
+        { id: 50, unit: "UNIT 2: COMPETITIONS", text: "Usain Bolt is a legendary track and field ________ who won multiple Olympic gold medals.", options: ["A. athlete", "B. athletist", "C. athletics player", "D. athlet_er"], ans: "A", exp: "กีฬา athletics สำหรับคนเล่นจะใช้คำเฉพาะคือ athlete" },
+        { id: 51, unit: "UNIT 2: COMPETITIONS", text: "She trains in the gym every day to become an Olympic ________.", options: ["A. gymner", "B. gymnast", "C. gymnastics player", "D. gymnerist"], ans: "B", exp: "ผู้เล่นยิมนาสติกเรียกว่า gymnast" },
+        { id: 52, unit: "UNIT 2: COMPETITIONS", text: "Billie Jean King is a famous ________ who fought for gender equality in sports.", options: ["A. tenniser", "B. tennisist", "C. tennis player", "D. tennis athlete"], ans: "C", exp: "กีฬา tennis ต้องเติมคำว่า player ท้ายชื่อเพื่อเป็นผู้เล่น เช่น tennis player" },
+        { id: 53, unit: "UNIT 2: COMPETITIONS", text: "________ to win and lose is important in a child's education.", options: ["A. Learn", "B. To learn", "C. Learning", "D. Learnt"], ans: "C", exp: "Gerund (-ing form: Learning) ทำหน้าที่เป็นประธาน (Subject) ของประโยค" },
+        { id: 54, unit: "UNIT 2: COMPETITIONS", text: "Competitive sports in schools are good for ________ children teamwork and discipline.", options: ["A. teach", "B. teaching", "C. taught", "D. to teach"], ans: "B", exp: "คำกริยาเติม -ing (teaching) ต้องใช้เมื่อตามหลังคำบุพบท (preposition: for)" },
+        { id: 55, unit: "UNIT 2: COMPETITIONS", text: "Some parents hate ________ in any school matches and get angry with their children.", options: ["A. lose", "B. lost", "C. losing", "D. to lose"], ans: "C", exp: "ตามหลังคำกริยาแสดงความรู้สึกรัก/เกลียด เช่น hate ต้องตามด้วย -ing form (losing)" },
+        { id: 56, unit: "UNIT 2: COMPETITIONS", text: "I am bored with ________ nothing. Let's go out for a walk.", options: ["A. do", "B. doing", "C. did", "D. done"], ans: "B", exp: "doing (Gerund) ตามหลัง preposition with (bored with ...)" },
+        { id: 57, unit: "UNIT 2: COMPETITIONS", text: "A champion is not afraid of ________ a game.", options: ["A. lose", "B. losing", "C. lost", "D. loses"], ans: "B", exp: "losing เป็น -ing form ที่ตามหลังบุพบท of (afraid of...)" },
+        { id: 58, unit: "UNIT 2: COMPETITIONS", text: "I really enjoy ________ the Tour de France on television.", options: ["A. watching", "B. watch", "C. to watch", "D. watched"], ans: "A", exp: "watching เป็นกริยาช่อง -ing ที่ต้องใช้หลังคำกริยาเฉพาะอย่าง enjoy" },
+        { id: 59, unit: "UNIT 2: COMPETITIONS", text: "Nomping doesn't like ________ Mangkon.", options: ["A. tease", "B. teasing", "C. teased", "D. to tease"], ans: "B", exp: "ตามหลังคำกริยา like / dislike ต้องใช้ -ing form (teasing)" },
+        { id: 60, unit: "UNIT 2: COMPETITIONS", text: "Yolanda and Claudina are ________ famous pop stars in Bolivia.", options: ["A. would like", "B. look like", "C. like", "D. liking"], ans: "C", exp: "ใช้ are like (be like) เพื่ออธิบายความเหมือนหรือเปรียบเทียบความคล้ายคลึง" },
+        { id: 61, unit: "UNIT 2: COMPETITIONS", text: "________ your daughters like to become professional wrestlers one day?", options: ["A. Do", "B. Would", "C. Are", "D. Will"], ans: "B", exp: "ใช้ Would you/your... like to + verb เพื่อถามถึงความปรารถนาในอนาคต" },
+        { id: 62, unit: "UNIT 2: COMPETITIONS", text: "Are you ________ anyone in your family? Maybe your mother?", options: ["A. like", "B. look", "C. liking", "D. likes"], ans: "A", exp: "be + like (Are you like...) ใช้ถามว่าคุณมีลักษณะที่เหมือนหรือคล้ายใครในครอบครัวหรือไม่" },
+        { id: 63, unit: "UNIT 2: COMPETITIONS", text: "I usually feel like ________ outside for a run after study hours.", options: ["A. go", "B. going", "C. to go", "D. went"], ans: "B", exp: "feel like ต้องตามด้วย -ing (going) แปลว่า อยากทำ..." },
+        { id: 64, unit: "UNIT 2: COMPETITIONS", text: "Although football is Bolivia's national sport, what other sport is the country highly famous for?", options: ["A. Boxing", "B. Wrestling", "C. Karate", "D. Chess"], ans: "B", exp: "จากบทความ: the country is also famous for another sport - wrestling." },
+        { id: 65, unit: "UNIT 2: COMPETITIONS", text: "When modern wrestling started in Bolivia in the 1950s, the competitors were all men, but nowadays ________.", options: ["A. only tourists can participate", "B. women are also competing in the ring", "C. children are the main wrestlers", "D. it is banned in the country"], ans: "B", exp: "จากบทความ: nowadays women are also competing in the ring." },
+        { id: 66, unit: "UNIT 2: COMPETITIONS", text: "Which city in Bolivia is described as a great place to watch the wrestling, where hundreds of spectators gather?", options: ["A. La Paz", "B. Sucre", "C. El Alto", "D. Santa Cruz"], ans: "C", exp: "จากบทความ: The city of El Alto is a good place to watch the wrestling." },
+        { id: 67, unit: "UNIT 2: COMPETITIONS", text: "Away from the ring, Yolanda has a normal, quiet life. What does she do to make a living?", options: ["A. She is a full-time school teacher.", "B. She makes clothes.", "C. She works in a local restaurant.", "D. She is a professional photographer."], ans: "B", exp: "จากบทความ: She has two daughters and she makes clothes for a living." },
+        { id: 68, unit: "UNIT 2: COMPETITIONS", text: "Why does Esperanza Cancina pay $1.50 (a large part of her salary) to watch the wrestling?", options: ["A. To see her daughter fight in the ring", "B. To learn how to wrestle himself", "C. Because she says they laugh and forget their problems for three or four hours", "D. To take pictures of Yolanda and Claudina"], ans: "C", exp: "จากบทความ: because she says [We laugh and we forget our problems for three or four hours.]" },
+
+        // Unit 3
+        { id: 69, unit: "UNIT 3: TRANSPORT", text: "We were stuck in a terrible ________ for hours during the morning rush hour.", options: ["A. speed limit", "B. traffic jam", "C. carbon emissions", "D. fuel costs"], ans: "B", exp: "traffic jam คือ รถติดอย่างหนักเป็นแถวยาว" },
+        { id: 70, unit: "UNIT 3: TRANSPORT", text: "The ________ starts early in the morning because lots of people travel to work at the same time.", options: ["A. speed limit", "B. rush hour", "C. container ships", "D. fuel costs"], ans: "B", exp: "rush hour คือ ชั่วโมงเร่งด่วนในเวลาเช้าหรือเย็น" },
+        { id: 71, unit: "UNIT 3: TRANSPORT", text: "The shipping company uses huge kites on their ships to reduce their high ________.", options: ["A. speed limit", "B. carbon emissions", "C. fuel costs", "D. traffic jams"], ans: "C", exp: "fuel costs คือ ค่าเชื้อเพลิง การใช้ใบปลิวยักษ์ช่วยลดต้นทุนนี้ลง" },
+        { id: 72, unit: "UNIT 3: TRANSPORT", text: "Driverless cars are safer because the computer controls the speed and they cannot exceed the ________.", options: ["A. speed limit", "B. rush hour", "C. traffic jam", "D. fuel costs"], ans: "A", exp: "speed limit คือ ขีดจำกัดความเร็วทางกฎหมาย" },
+        { id: 73, unit: "UNIT 3: TRANSPORT", text: "Most products and goods are transported across the ocean on massive ________.", options: ["A. container ships", "B. monorails", "C. electric rickshaws", "D. pedicabs"], ans: "A", exp: "container ships คือ เรือสินค้าขนาดใหญ่ที่ใช้ขนสินค้าตู้คอนเทนเนอร์" },
+        { id: 74, unit: "UNIT 3: TRANSPORT", text: "There are already plans for the first Hyperloop to connect the ________ of San Francisco and Los Angeles.", options: ["A. carbon emissions", "B. city centres", "C. speed limits", "D. bus stops"], ans: "B", exp: "city centres คือ ใจกลางเมืองหลวงหรือศูนย์กลางของเมือง" },
+        { id: 75, unit: "UNIT 3: TRANSPORT", text: "Using electric vehicles or solar-powered cars can help reduce dangerous ________.", options: ["A. carbon emissions", "B. fuel costs", "C. traffic jams", "D. speed limits"], ans: "A", exp: "carbon emissions คือ ปริมาณก๊าซคาร์บอนที่ปล่อยออกมา" },
+        { id: 76, unit: "UNIT 3: TRANSPORT", text: "Please wait for me at the ________; the next bus will arrive in five minutes.", options: ["A. airport", "B. bus stop", "C. city centre", "D. speed limit"], ans: "B", exp: "bus stop คือ ป้ายจอดรถประจำทาง" },
+        { id: 77, unit: "UNIT 3: TRANSPORT", text: "A London bus is a lot ________ expensive than taking a black cab.", options: ["A. more", "B. much", "C. less", "D. least"], ans: "C", exp: "ตามบทเรียนบัสราคาถูกกว่าแบล็คแค็บมาก ดังนั้นบัสจึงเป็น a lot less expensive" },
+        { id: 78, unit: "UNIT 3: TRANSPORT", text: "Black-cab drivers say their cabs are ________ faster in heavy rush-hour traffic because they know the best routes.", options: ["A. slightly", "B. much", "C. a little", "D. a bit"], ans: "B", exp: "much ใช้เพื่อขยายความต่างที่มาก (big difference) ก่อนหน้ากริยาเปรียบเทียบขั้นกว่า (faster)" },
+        { id: 79, unit: "UNIT 3: TRANSPORT", text: "Sometimes private taxis booked via mobile apps are also a ________ cheaper and a little faster.", options: ["A. much", "B. lot", "C. bit", "D. far"], ans: "C", exp: "a bit ใช้คู่กับ comparative adjective (cheaper) เพื่อระบุความแตกต่างเพียงเล็กน้อย" },
+        { id: 80, unit: "UNIT 3: TRANSPORT", text: "P'Matoey is ________ beautiful than P'Phum.", options: ["A. many", "B. more", "C. most", "D. the most"], ans: "B", exp: "beautiful เป็นคำหลายพยางค์ ในประโยคเปรียบเทียบขั้นกว่าต้องใช้ more beautiful than" },
+        { id: 81, unit: "UNIT 3: TRANSPORT", text: "A new electric car is the ________ expensive type of vehicle on the market today.", options: ["A. most", "B. more", "C. much", "D. very"], ans: "A", exp: "the most + long adjective (expensive) เพื่อบอกขั้นสูงสุด" },
+        { id: 82, unit: "UNIT 3: TRANSPORT", text: "My bicycle is ________ than your car during the heavy morning rush hour.", options: ["A. fast", "B. faster", "C. fastest", "D. more fast"], ans: "B", exp: "เปรียบเทียบสองสิ่ง มี than นำมาใช้แสดงถึงการเป็นขั้นกว่า (faster)" },
+        { id: 83, unit: "UNIT 3: TRANSPORT", text: "Which form of public transport is the ________ popular for commuting in your city?", options: ["A. more", "B. much", "C. most", "D. worse"], ans: "C", exp: "the + most popular เป็นโครงสร้างขั้นสูงสุด (superlative)" },
+        { id: 84, unit: "UNIT 3: TRANSPORT", text: "In winter, northern Alaska can be ________ cold ________ the North Pole.", options: ["A. as / than", "B. as / as", "C. more / than", "D. not as / as"], ans: "B", exp: "as + adjective + as ใช้บอกว่าสองสิ่งมีความเท่าเทียมกัน" },
+        { id: 85, unit: "UNIT 3: TRANSPORT", text: "For long distances, modern vehicles are not ________ good ________ camels.", options: ["A. as / as", "B. as / than", "C. more / than", "D. most / than"], ans: "A", exp: "not as + adjective + as ใช้บอกความแตกต่างว่าสิ่งแรกไม่เท่าสิ่งหลัง" },
+        { id: 86, unit: "UNIT 3: TRANSPORT", text: "An underground train across London isn't ________ expensive ________ a taxi.", options: ["A. so / than", "B. as / as", "C. as / than", "D. more / than"], ans: "B", exp: "not as expensive as แปลว่า แพงไม่เท่ากับ" },
+        { id: 87, unit: "UNIT 3: TRANSPORT", text: "The journey by train is ________ fast ________ the bus when there is no traffic jam.", options: ["A. as / as", "B. more / than", "C. as / than", "D. not as / as"], ans: "A", exp: "as fast as แสดงความเร็วที่เท่ากัน" },
+        { id: 88, unit: "UNIT 3: TRANSPORT", text: "A ________ train or taxi always arrives on time at the scheduled hour.", options: ["A. comfortable", "B. punctual", "C. traditional", "D. frequent"], ans: "B", exp: "punctual แปลว่า ตรงต่อเวลา" },
+        { id: 89, unit: "UNIT 3: TRANSPORT", text: "On any main road in London, there are ________ cabs so you don't have to wait long.", options: ["A. reliable", "B. punctual", "C. comfortable", "D. frequent"], ans: "D", exp: "frequent แปลว่า ที่บ่อย มีรถวิ่งมาบ่อยๆ" },
+        { id: 90, unit: "UNIT 3: TRANSPORT", text: "The seats of these luxury coaches are extremely soft, making them very ________ to ride in.", options: ["A. traditional", "B. comfortable", "C. punctual", "D. convenient"], ans: "B", exp: "comfortable แปลว่า นั่งสบาย ผ่อนคลาย" },
+        { id: 91, unit: "UNIT 3: TRANSPORT", text: "Private taxis booked online are sometimes seen as less ________ in rush-hour traffic compared to traditional black cabs.", options: ["A. convenient", "B. reliable", "C. comfortable", "D. traditional"], ans: "B", exp: "reliable แปลว่า เชื่อถือได้/ไว้ใจได้" },
+        { id: 92, unit: "UNIT 3: TRANSPORT", text: "Can you ________ the children from school on your way home?", options: ["A. catch", "B. get on", "C. pick up", "D. drop off"], ans: "C", exp: "pick up คือ การแวะรับคน" },
+        { id: 93, unit: "UNIT 3: TRANSPORT", text: "We must leave now or we will ________ our next train.", options: ["A. catch", "B. miss", "C. go by", "D. get on"], ans: "B", exp: "miss (the train) แปลว่า ตกรถไฟ" },
+        { id: 94, unit: "UNIT 3: TRANSPORT", text: "Let's park our car here and ________ on foot to avoid the traffic jam in the city centre.", options: ["A. catch", "B. get on", "C. go", "D. drop off"], ans: "C", exp: "go on foot เป็นสำนวนที่ใช้กับการเดินด้วยเท้า" },
+        { id: 95, unit: "UNIT 3: TRANSPORT", text: "Please ask the taxi driver to ________ me ________ outside the main entrance.", options: ["A. drop / off", "B. pick / up", "C. get / on", "D. go / by"], ans: "A", exp: "drop (someone) off แปลว่า จอดให้คนลงรถ" },
+        { id: 96, unit: "UNIT 3: TRANSPORT", text: "Kolkata, which is famous for its traditional hand-pulled rickshaws, is the capital of ________ in India.", options: ["A. West Bengal", "B. New Delhi", "C. Mumbai", "D. Rajasthan"], ans: "A", exp: "จากบทความ: Kolkata is the capital of West Bengal in India." },
+        { id: 97, unit: "UNIT 3: TRANSPORT", text: "Why do housewives in Kolkata often prefer to go by hand-pulled rickshaws to local markets?", options: ["A. Because they are faster than the underground trains.", "B. Because the driver drops them off with their shopping right outside their house.", "C. Because they are the most expensive type of transport.", "D. Because they have modern electric engines."], ans: "B", exp: "จากบทความ: The driver drops the women off with their shopping outside their house..." },
+        { id: 98, unit: "UNIT 3: TRANSPORT", text: "Some local politicians in Kolkata do not like the famous traditional rickshaws because they think ________.", options: ["A. they are too cheap for tourists", "B. it is wrong for one human to pull other humans", "C. they are too fast for narrow streets", "D. they produce too much carbon emission"], ans: "B", exp: "จากบทความ: because they think it's wrong for one human to pull other humans." },
+        { id: 99, unit: "UNIT 3: TRANSPORT", text: "Approximately how many traditional hand-pulled rickshaw drivers are there in Kolkata?", options: ["A. 500", "B. 1,000", "C. 2,000", "D. 15 million"], ans: "C", exp: "จากบทความ: Kolkata has around 2,000 rickshaw drivers who pull their passengers by hand." },
+        { id: 100, unit: "UNIT 3: TRANSPORT", text: "Why can't traditional hand-pulled rickshaw drivers easily switch to modern electric rickshaws?", options: ["A. Because electric rickshaws are too slow.", "B. Because the government has banned electric engines.", "C. Because new electric rickshaws are very expensive and the drivers cannot afford them.", "D. Because the drivers prefer to pull passengers in heavy rain."], ans: "C", exp: "จากบทความ: The new electric rickshaws are very expensive, so these drivers can't afford them." }
+    ];
+
+    let seconds = 0;
+    let timerInterval = null;
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            seconds++;
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('examForm');
+        let currentUnit = "";
+
+        questionsData.forEach((q, index) => {
+            if (q.unit !== currentUnit) {
+                currentUnit = q.unit;
+                const unitHead = document.createElement('div');
+                unitHead.className = 'unit-header';
+                unitHead.textContent = currentUnit;
+                container.appendChild(unitHead);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `q-card-${q.id}`;
+
+            const title = document.createElement('div');
+            title.className = 'question-title';
+            title.textContent = `Q${q.id}. ${q.text}`;
+            card.appendChild(title);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            q.options.forEach(opt => {
+                const optVal = opt.charAt(0);
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                label.id = `label-${q.id}-${optVal}`;
+
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `q${q.id}`;
+                input.value = optVal;
+
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(opt));
+                optionsDiv.appendChild(label);
+            });
+
+            card.appendChild(optionsDiv);
+
+            const exp = document.createElement('div');
+            exp.className = 'explanation';
+            exp.id = `exp-${q.id}`;
+            exp.innerHTML = `<strong>เฉลย: ตอบ ${q.ans}</strong><br>${q.exp}`;
+            card.appendChild(exp);
+
+            container.appendChild(card);
+        });
+    }
+
+    function submitExam() {
+        clearInterval(timerInterval);
+        let score = 0;
+
+        questionsData.forEach(q => {
+            const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
+            const expDiv = document.getElementById(`exp-${q.id}`);
+            expDiv.style.display = 'block';
+
+            q.options.forEach(opt => {
+                const optVal = opt.charAt(0);
+                const label = document.getElementById(`label-${q.id}-${optVal}`);
+                label.classList.remove('correct', 'incorrect');
+
+                if (optVal === q.ans) {
+                    label.classList.add('correct');
+                }
+            });
+
+            if (selected) {
+                if (selected.value === q.ans) {
+                    score++;
+                } else {
+                    const wrongLabel = document.getElementById(`label-${q.id}-${selected.value}`);
+                    wrongLabel.classList.add('incorrect');
+                }
+            }
+        });
+
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        document.getElementById('score').textContent = score;
+        scoreDisplay.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetExam() {
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        document.querySelectorAll('.explanation').forEach(e => e.style.display = 'none');
+        document.querySelectorAll('.option-label').forEach(l => l.classList.remove('correct', 'incorrect'));
+        document.getElementById('scoreDisplay').style.display = 'none';
+        seconds = 0;
+        document.getElementById('timer').textContent = '00:00';
+        clearInterval(timerInterval);
+        startTimer();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.onload = () => {
+        renderQuestions();
+        startTimer();
+    };
+</script>
+
+</body>
+</html>
