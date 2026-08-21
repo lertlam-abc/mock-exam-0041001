@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0041001 Preparatory English — ข้อสอบจำลองกลางภาค</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF6EC;
+  --paper-dim:#F1EADA;
+  --card:#FFFDF8;
+  --ink:#2A2822;
+  --ink-soft:#5C574C;
+  --ink-faint:#9B9484;
+  --rule:#DDD3BC;
+  --pencil:#8A8471;
+  --red:#B5432E;
+  --red-soft:#F4E1DA;
+  --green:#3E7259;
+  --green-soft:#DEEBE1;
+  --gold:#A9772F;
+  --gold-soft:#F0E3C8;
+  --shadow: 0 1px 0 rgba(42,40,34,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(42,40,34,0.045) 1px, transparent 0);
+  background-size: 22px 22px;
+  color:var(--ink);
+  font-family:'Sarabun',sans-serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+::selection{background:var(--gold-soft);}
+
+/* ---------- Layout shells ---------- */
+.screen{display:none;}
+.screen.active{display:block;}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px;}
+.wrap-wide{max-width:1180px;margin:0 auto;padding:0;}
+
+/* ---------- Header strip (perforated exam-paper look) ---------- */
+.exam-header{
+  border-bottom:2px solid var(--ink);
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+  background:var(--card);
+  position:sticky;top:0;z-index:40;
+  box-shadow:0 2px 8px rgba(42,40,34,0.05);
+}
+.exam-header .code{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;letter-spacing:0.08em;color:var(--ink-soft);
+}
+.exam-header .title{font-weight:600;font-size:15px;}
+.exam-header .hstack{display:flex;flex-direction:column;gap:2px;}
+.timerbox{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14px;background:var(--paper-dim);
+  border:1px solid var(--rule);border-radius:6px;
+  padding:6px 12px;color:var(--ink);white-space:nowrap;
+}
+
+/* ---------- Cover screen ---------- */
+.cover{
+  border:2px solid var(--ink);
+  background:var(--card);
+  margin-top:34px;
+  position:relative;
+}
+.cover::before{
+  content:"";
+  position:absolute;top:8px;left:8px;right:8px;bottom:8px;
+  border:1px solid var(--rule);
+  pointer-events:none;
+}
+.cover-inner{padding:44px 40px 40px;position:relative;}
+.stamp{
+  position:absolute;top:34px;right:38px;
+  border:2px solid var(--red);
+  color:var(--red);
+  border-radius:50%;
+  width:88px;height:88px;
+  display:flex;align-items:center;justify-content:center;
+  transform:rotate(-14deg);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;font-weight:600;text-align:center;line-height:1.3;
+  letter-spacing:0.03em;
+  opacity:0.85;
+}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:10px;font-weight:600;
+}
+.cover h1{
+  font-size:clamp(26px,4vw,38px);
+  margin:0 0 6px;line-height:1.15;font-weight:700;
+}
+.cover .sub{color:var(--ink-soft);font-size:16px;margin-bottom:26px;}
+.cover .meta-row{
+  display:flex;flex-wrap:wrap;gap:0;
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  margin:22px 0 28px;
+}
+.meta-cell{
+  flex:1;min-width:130px;
+  padding:14px 18px;
+  border-right:1px solid var(--rule);
+}
+.meta-cell:last-child{border-right:none;}
+.meta-cell .k{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;}
+.meta-cell .v{font-size:19px;font-weight:600;}
+
+.mode-pick{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:26px;}
+@media (max-width:640px){.mode-pick{grid-template-columns:1fr;}}
+.mode-card{
+  border:1.5px solid var(--rule);
+  border-radius:10px;padding:18px 18px 16px;
+  cursor:pointer;transition:all .15s ease;
+  background:var(--paper);
+}
+.mode-card:hover{border-color:var(--ink);transform:translateY(-1px);}
+.mode-card.selected{border-color:var(--red);background:var(--red-soft);}
+.mode-card .mc-title{font-weight:600;font-size:15.5px;margin-bottom:4px;}
+.mode-card .mc-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.5;}
+
+.unit-picker{display:none;margin-bottom:22px;}
+.unit-picker.show{display:block;}
+.unit-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.unit-chip{
+  border:1.5px solid var(--rule);border-radius:20px;
+  padding:8px 16px;font-size:13.5px;cursor:pointer;
+  background:var(--paper);transition:all .15s;
+}
+.unit-chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+.btn{
+  font-family:'Sarabun',sans-serif;
+  border:none;cursor:pointer;font-weight:600;font-size:15px;
+  padding:13px 26px;border-radius:8px;
+  transition:transform .1s ease, box-shadow .15s ease;
+}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--ink);color:var(--paper);}
+.btn-primary:hover{box-shadow:0 4px 14px rgba(42,40,34,0.25);}
+.btn-primary:disabled{background:var(--ink-faint);cursor:not-allowed;box-shadow:none;}
+.btn-ghost{background:transparent;border:1.5px solid var(--ink);color:var(--ink);}
+.btn-ghost:hover{background:var(--paper-dim);}
+.btn-red{background:var(--red);color:#fff;}
+.btn-sm{padding:8px 16px;font-size:13.5px;border-radius:6px;}
+
+.cover-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.cover-note{font-size:12.5px;color:var(--ink-faint);max-width:420px;line-height:1.5;}
+
+/* ---------- Exam-taking screen ---------- */
+.exam-body{display:grid;grid-template-columns:250px 1fr;gap:0;min-height:calc(100vh - 60px);}
+@media (max-width:860px){.exam-body{grid-template-columns:1fr;}}
+
+.navpanel{
+  border-right:1px solid var(--rule);
+  padding:20px 16px;background:var(--card);
+  position:sticky;top:60px;align-self:start;
+  max-height:calc(100vh - 60px);overflow-y:auto;
+}
+@media (max-width:860px){.navpanel{position:relative;top:0;max-height:none;border-right:none;border-bottom:1px solid var(--rule);}}
+.navpanel h3{font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin:0 0 12px;font-family:'IBM Plex Mono',monospace;}
+.bubble-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+.bubble{
+  width:34px;height:34px;border-radius:50%;
+  border:1.5px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  cursor:pointer;background:var(--paper);color:var(--ink-soft);
+  transition:all .12s;
+}
+.bubble:hover{border-color:var(--ink);}
+.bubble.answered{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.bubble.current{outline:2.5px solid var(--red);outline-offset:2px;}
+.navpanel .legend{display:flex;flex-direction:column;gap:6px;margin-top:16px;font-size:12px;color:var(--ink-soft);}
+.legend-item{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--rule);flex:none;}
+.legend-dot.f{background:var(--ink);border-color:var(--ink);}
+
+.qpanel{padding:34px 40px 60px;max-width:760px;}
+@media (max-width:640px){.qpanel{padding:22px 18px 60px;}}
+.progress-line{
+  height:4px;background:var(--rule);border-radius:2px;overflow:hidden;margin-bottom:26px;
+}
+.progress-fill{height:100%;background:var(--red);transition:width .2s ease;}
+.q-tag{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;
+}
+.q-num{
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;
+  background:var(--ink);color:var(--paper);padding:4px 11px;border-radius:5px;
+}
+.q-unit{font-size:12.5px;color:var(--gold);font-weight:600;}
+.q-topic{font-size:12px;color:var(--ink-faint);}
+.q-text{font-size:19px;line-height:1.55;margin:0 0 26px;font-weight:500;}
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.opt{
+  display:flex;align-items:flex-start;gap:14px;
+  border:1.5px solid var(--rule);border-radius:10px;
+  padding:14px 16px;cursor:pointer;background:var(--card);
+  transition:all .12s;
+}
+.opt:hover{border-color:var(--pencil);background:var(--paper-dim);}
+.opt.picked{border-color:var(--red);background:var(--red-soft);}
+.opt .letter{
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;
+  width:26px;height:26px;border-radius:50%;border:1.5px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;flex:none;
+  background:var(--paper);
+}
+.opt.picked .letter{background:var(--red);border-color:var(--red);color:#fff;}
+.opt .otext{font-size:15.5px;line-height:1.5;padding-top:2px;}
+
+.qnav{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.qnav-side{display:flex;gap:10px;}
+
+/* ---------- Results screen ---------- */
+.results-hero{
+  border:2px solid var(--ink);background:var(--card);
+  padding:40px 36px;margin-top:30px;text-align:center;position:relative;
+}
+.score-ring{
+  width:150px;height:150px;border-radius:50%;
+  margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:conic-gradient(var(--red) calc(var(--pct) * 1%), var(--rule) 0);
+  position:relative;
+}
+.score-ring::before{
+  content:"";position:absolute;inset:10px;border-radius:50%;background:var(--card);
+}
+.score-ring .sr-num{position:relative;font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:600;}
+.score-ring .sr-sub{position:relative;font-size:11px;color:var(--ink-soft);}
+.results-hero h2{margin:0 0 4px;font-size:22px;}
+.results-hero .rh-sub{color:var(--ink-soft);font-size:14.5px;margin-bottom:22px;}
+.results-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+.unit-breakdown{margin-top:28px;display:flex;flex-direction:column;gap:14px;}
+.ub-row .ub-top{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;}
+.ub-row .ub-top .name{font-weight:600;}
+.ub-track{height:9px;background:var(--rule);border-radius:5px;overflow:hidden;}
+.ub-fill{height:100%;background:var(--green);}
+
+.topic-table{margin-top:10px;border-top:1px solid var(--rule);}
+.topic-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 2px;border-bottom:1px solid var(--rule);font-size:13.5px;gap:12px;
+}
+.topic-row .tname{color:var(--ink-soft);}
+.topic-row .tscore{font-family:'IBM Plex Mono',monospace;font-weight:600;white-space:nowrap;}
+.topic-row .tscore.weak{color:var(--red);}
+.topic-row .tscore.strong{color:var(--green);}
+
+.section-card{
+  background:var(--card);border:1.5px solid var(--rule);border-radius:12px;
+  padding:24px 26px;margin-top:20px;
+}
+.section-card h3{margin:0 0 4px;font-size:16px;}
+
+/* ---------- Review screen ---------- */
+.review-toolbar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  margin:26px 0 18px;
+}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;}
+.filter-chip{
+  border:1.5px solid var(--rule);border-radius:20px;padding:7px 15px;font-size:13px;
+  cursor:pointer;background:var(--paper);font-family:'Sarabun',sans-serif;font-weight:500;
+}
+.filter-chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+.rcard{
+  border:1.5px solid var(--rule);border-radius:12px;background:var(--card);
+  padding:20px 22px;margin-bottom:14px;
+}
+.rcard.correct{border-left:5px solid var(--green);}
+.rcard.wrong{border-left:5px solid var(--red);}
+.rcard.blank{border-left:5px solid var(--ink-faint);}
+.rc-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.rc-badge{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+  padding:3px 9px;border-radius:12px;letter-spacing:0.03em;
+}
+.rc-badge.correct{background:var(--green-soft);color:var(--green);}
+.rc-badge.wrong{background:var(--red-soft);color:var(--red);}
+.rc-badge.blank{background:var(--paper-dim);color:var(--ink-faint);}
+.rc-q{font-size:16px;font-weight:500;margin:0 0 14px;line-height:1.5;}
+.rc-opts{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+.rc-opt{
+  display:flex;gap:10px;align-items:flex-start;font-size:14px;
+  padding:9px 12px;border-radius:8px;border:1px solid transparent;
+}
+.rc-opt .letter{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+  width:22px;height:22px;border-radius:50%;border:1.5px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;flex:none;background:var(--paper);
+}
+.rc-opt.is-correct{background:var(--green-soft);border-color:var(--green);}
+.rc-opt.is-correct .letter{background:var(--green);border-color:var(--green);color:#fff;}
+.rc-opt.is-wrong-pick{background:var(--red-soft);border-color:var(--red);}
+.rc-opt.is-wrong-pick .letter{background:var(--red);border-color:var(--red);color:#fff;}
+.rc-tag{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:1px 6px;border-radius:4px;margin-left:auto;flex:none;align-self:center;}
+.rc-tag.tc{background:var(--green);color:#fff;}
+.rc-tag.tw{background:var(--red);color:#fff;}
+.rc-exp{
+  background:var(--paper-dim);border-radius:8px;padding:12px 14px;
+  font-size:13.5px;line-height:1.6;color:var(--ink-soft);
+}
+.rc-exp b{color:var(--ink);}
+
+.back-to-top{
+  position:fixed;bottom:22px;right:22px;
+  background:var(--ink);color:var(--paper);
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  font-size:18px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.back-to-top.show{opacity:1;pointer-events:auto;}
+
+.confirm-overlay{
+  position:fixed;inset:0;background:rgba(42,40,34,0.55);
+  display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+}
+.confirm-overlay.show{display:flex;}
+.confirm-box{
+  background:var(--card);border-radius:12px;padding:26px 26px 22px;max-width:380px;width:100%;
+  border:1.5px solid var(--rule);
+}
+.confirm-box h4{margin:0 0 8px;font-size:16.5px;}
+.confirm-box p{margin:0 0 20px;font-size:14px;color:var(--ink-soft);line-height:1.55;}
+.confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+@media print{
+  .exam-header,.navpanel,.qnav,.back-to-top,.review-toolbar,.results-actions{display:none !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h4 id="confirmTitle">ยืนยันการส่งข้อสอบ</h4>
+    <p id="confirmText">คุณยังตอบไม่ครบทุกข้อ ต้องการส่งคำตอบเลยหรือไม่?</p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost btn-sm" id="confirmCancel">ยกเลิก</button>
+      <button class="btn btn-red btn-sm" id="confirmOk">ส่งข้อสอบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ COVER SCREEN ============ -->
+<div class="screen active" id="screen-cover">
+  <div class="wrap">
+    <div class="cover">
+      <div class="cover-inner">
+        <div class="stamp">MOCK<br>EXAM<br>2569</div>
+        <div class="eyebrow">0041001 · Preparatory English</div>
+        <h1>ข้อสอบจำลองสอบกลางภาค</h1>
+        <div class="sub">ภาคเรียนที่ 1 ปีการศึกษา 2569 — อ้างอิงตามโครงสร้างและจำนวนข้อสอบจริง</div>
+
+        <div class="meta-row">
+          <div class="meta-cell"><div class="k">จำนวนข้อ</div><div class="v">100 ข้อ</div></div>
+          <div class="meta-cell"><div class="k">หน่วยการเรียนรู้</div><div class="v">3 หน่วย</div></div>
+          <div class="meta-cell"><div class="k">รูปแบบ</div><div class="v">ปรนัย 4 ตัวเลือก</div></div>
+        </div>
+
+        <div class="mode-pick">
+          <div class="mode-card selected" data-mode="full">
+            <div class="mc-title">📝 ทำเต็มฉบับ (100 ข้อ)</div>
+            <div class="mc-desc">จำลองสถานการณ์สอบจริง ครบทั้ง 3 หน่วย: Lifestyle, Competitions, Transport</div>
+          </div>
+          <div class="mode-card" data-mode="unit">
+            <div class="mc-title">🎯 เลือกทำเป็นหน่วย</div>
+            <div class="mc-desc">ฝึกทีละหน่วยเพื่อทบทวนจุดที่ยังไม่แม่น ก่อนไปลุยฉบับเต็ม</div>
+          </div>
+        </div>
+
+        <div class="unit-picker" id="unitPicker">
+          <div class="q-topic" style="margin-bottom:4px;">เลือกหน่วยที่ต้องการฝึก (เลือกได้มากกว่า 1 หน่วย)</div>
+          <div class="unit-chip-row" id="unitChipRow"></div>
+        </div>
+
+        <div class="cover-foot">
+          <div class="cover-note">เมื่อกด "เริ่มทำข้อสอบ" ระบบจะจับเวลาให้อัตโนมัติ คุณสามารถข้ามไปมาระหว่างข้อได้อย่างอิสระ และดูคะแนนพร้อมเฉลยละเอียดทันทีหลังส่งคำตอบ</div>
+          <button class="btn btn-primary" id="startBtn">เริ่มทำข้อสอบ →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EXAM SCREEN ============ -->
+<div class="screen" id="screen-exam">
+  <div class="exam-header">
+    <div class="hstack">
+      <div class="title">0041001 Preparatory English — Mock Exam</div>
+      <div class="code" id="examProgressLabel">ข้อ 1 / 100</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="timerbox mono" id="timerDisplay">00:00</div>
+      <button class="btn btn-red btn-sm" id="submitBtn">ส่งข้อสอบ</button>
+    </div>
+  </div>
+
+  <div class="exam-body">
+    <div class="navpanel">
+      <h3>ผังข้อสอบ</h3>
+      <div class="bubble-grid" id="bubbleGrid"></div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot f"></span> ตอบแล้ว</div>
+        <div class="legend-item"><span class="legend-dot"></span> ยังไม่ตอบ</div>
+      </div>
+    </div>
+
+    <div class="qpanel">
+      <div class="progress-line"><div class="progress-fill" id="progressFill" style="width:1%"></div></div>
+      <div class="q-tag">
+        <span class="q-num mono" id="qNumTag">Q1</span>
+        <span class="q-unit" id="qUnitTag"></span>
+        <span class="q-topic" id="qTopicTag"></span>
+      </div>
+      <p class="q-text" id="qText"></p>
+      <div class="options" id="qOptions"></div>
+      <div class="qnav">
+        <div class="qnav-side">
+          <button class="btn btn-ghost" id="prevBtn">← ข้อก่อนหน้า</button>
+        </div>
+        <div class="qnav-side">
+          <button class="btn btn-primary" id="nextBtn">ข้อถัดไป →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RESULTS SCREEN ============ -->
+<div class="screen" id="screen-results">
+  <div class="wrap">
+    <div class="results-hero">
+      <div class="eyebrow">ผลการทำข้อสอบ</div>
+      <div class="score-ring" id="scoreRing" style="--pct:0;">
+        <div class="sr-num mono" id="scoreNum">0/100</div>
+        <div class="sr-sub" id="scorePct">0%</div>
+      </div>
+      <h2 id="resultHeadline">สรุปผลคะแนน</h2>
+      <div class="rh-sub" id="resultSub">คุณใช้เวลาทำข้อสอบทั้งหมด —</div>
+      <div class="results-actions">
+        <button class="btn btn-primary" id="reviewBtn">🔍 ตรวจคำตอบ & ดูเฉลย</button>
+        <button class="btn btn-ghost" id="retryBtn">↻ ทำข้อสอบใหม่</button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>คะแนนแยกตามหน่วยการเรียนรู้</h3>
+      <div class="unit-breakdown" id="unitBreakdown"></div>
+    </div>
+
+    <div class="section-card">
+      <h3>คะแนนแยกตามหัวข้อย่อย</h3>
+      <div class="q-topic" style="margin-bottom:2px;">จุดที่คะแนนต่ำ คือจุดที่ควรกลับไปทบทวนก่อน</div>
+      <div class="topic-table" id="topicTable"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ REVIEW SCREEN ============ -->
+<div class="screen" id="screen-review">
+  <div class="wrap">
+    <div class="review-toolbar">
+      <div>
+        <h2 style="margin:0 0 4px;font-size:20px;">เฉลยละเอียดรายข้อ</h2>
+        <div class="q-topic" id="reviewCount"></div>
+      </div>
+      <div class="filter-row" id="filterRow">
+        <div class="filter-chip on" data-filter="all">ทั้งหมด</div>
+        <div class="filter-chip" data-filter="wrong">ตอบผิด</div>
+        <div class="filter-chip" data-filter="correct">ตอบถูก</div>
+        <div class="filter-chip" data-filter="blank">ยังไม่ตอบ</div>
+      </div>
+    </div>
+    <div id="reviewList"></div>
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:20px;">
+      <button class="btn btn-ghost" id="backToResultsBtn">← กลับไปหน้าสรุปคะแนน</button>
+      <button class="btn btn-primary" id="retryBtn2">↻ ทำข้อสอบใหม่</button>
+    </div>
+  </div>
+</div>
+
+<div class="back-to-top" id="backToTop">↑</div>
+
+<script id="questions-data" type="application/json">
+[{"num": 1, "unit": "Unit 1: Lifestyle", "topic": "Vocabulary: everyday routines", "q": "After working long hours at the office desk, I often feel ________ and fall asleep early.", "options": {"A": "early", "B": "tired", "C": "break", "D": "home late"}, "answer": "B", "exp": "คอลโลเคชัน feel tired แปลว่า รู้สึกเหนื่อยล้าหลังจากการทำงานหนักยาวนาน"}, {"num": 2, "unit": "Unit 1: Lifestyle", "topic": "Vocabulary: everyday routines", "q": "My friends and I usually ________ until midnight watching TV or playing games.", "options": {"A": "wake up", "B": "stay up", "C": "work long", "D": "get up"}, "answer": "B", "exp": "stay up (until midnight) คือคอลโลเคชันที่ถูกต้อง หมายถึง นอนดึกหรืออยู่จนถึงเที่ยงคืน"}, {"num": 3, "unit": "Unit 1: Lifestyle", "topic": "Vocabulary: everyday routines", "q": "During a busy day, it is important to ________ a break to relax your brain.", "options": {"A": "make", "B": "do", "C": "take", "D": "work"}, "answer": "C", "exp": "คอลโลเคชันที่ถูกต้องคือ take a break แปลว่า หยุดพัก"}, {"num": 4, "unit": "Unit 1: Lifestyle", "topic": "Vocabulary: everyday routines", "q": "The average human needs to sleep around eight hours, but many people have trouble ________ asleep.", "options": {"A": "falling", "B": "waking", "C": "staying", "D": "getting"}, "answer": "A", "exp": "คอลโลเคชัน fall asleep แปลว่า นอนหลับ หรือเริ่มหลับ"}, {"num": 5, "unit": "Unit 1: Lifestyle", "topic": "Vocabulary: everyday routines", "q": "Every morning, I ________ early at 6:00 a.m. because my class starts early.", "options": {"A": "stay up", "B": "get home late", "C": "wake up", "D": "fall asleep"}, "answer": "C", "exp": "wake up early หมายถึง ตื่นนอนตอนเช้าตรู่"}, {"num": 6, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & adverbs of frequency", "q": "My brother ________ tennis on Saturday mornings.", "options": {"A": "plays always", "B": "is playing always", "C": "always plays", "D": "always play"}, "answer": "C", "exp": "Adverb of frequency (always) ต้องวางไว้หน้ากริยาแท้ (plays) และประธาน My brother เป็นเอกพจน์ กริยาเติม -s"}, {"num": 7, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & adverbs of frequency", "q": "She is ________ for work. She wakes up late every day.", "options": {"A": "late usually", "B": "usually late", "C": "usually is late", "D": "late is usually"}, "answer": "B", "exp": "Adverb of frequency (usually) ต้องวางไว้หลัง Verb to be (is) เสมอ"}, {"num": 8, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & adverbs of frequency", "q": "Bost ________ love P'Phum.", "options": {"A": "don't", "B": "isn't", "C": "doesn't", "D": "aren't"}, "answer": "C", "exp": "Bost เป็นประธานเอกพจน์ในประโยคปฏิเสธของ Present Simple ต้องใช้ doesn't ตามด้วยกริยาช่อง 1 (love)"}, {"num": 9, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & adverbs of frequency", "q": "How often ________ you and your family eat out in restaurants?", "options": {"A": "are", "B": "do", "C": "does", "D": "is"}, "answer": "B", "exp": "ประธาน you and your family เป็นพหูพจน์ กริยาช่วยในประโยคคำถาม Present Simple จึงต้องใช้ do"}, {"num": 10, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & adverbs of frequency", "q": "The Okinawan people ________ buy food from a supermarket; they grow their own vegetables.", "options": {"A": "rarely", "B": "always", "C": "usually", "D": "twice a week"}, "answer": "A", "exp": "rarely แปลว่า แทบจะไม่ สอดคล้องกับเนื้อหาที่ชาวโอกินาวาแทบจะไม่ซื้ออาหารจากซูเปอร์มาร์เก็ตเพราะปลูกผักเอง"}, {"num": 11, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & adverbs of frequency", "q": "Peter ________ to the local market every Sunday morning.", "options": {"A": "go", "B": "is going", "C": "goes", "D": "went"}, "answer": "C", "exp": "ประธาน Peter เป็นเอกพจน์ บ่งบอกความเป็นกิจวัตรประจำวัน (every Sunday) กริยา go จึงลงท้ายด้วย -es เป็น goes"}, {"num": 12, "unit": "Unit 1: Lifestyle", "topic": "Word building: do, play, and go", "q": "In Okinawa, many elderly people lead active lives and go ________ in the sea to catch seaweed.", "options": {"A": "karate", "B": "yoga", "C": "swimming", "D": "cards"}, "answer": "C", "exp": "go ใช้กับกีฬาหรือกิจกรรมที่ลงท้ายด้วย -ing เช่น go swimming"}, {"num": 13, "unit": "Unit 1: Lifestyle", "topic": "Word building: do, play, and go", "q": "My sister does ________ to relax her mind and body every evening.", "options": {"A": "tennis", "B": "yoga", "C": "running", "D": "hiking"}, "answer": "B", "exp": "does yoga เป็นคอลโลเคชันที่ถูกต้องสำหรับศิลปะการฝึกร่างกาย/การผ่อนคลาย"}, {"num": 14, "unit": "Unit 1: Lifestyle", "topic": "Word building: do, play, and go", "q": "The drivers pick up children early, and Okinawans never drive when they can ________.", "options": {"A": "go hiking", "B": "walk", "C": "play tennis", "D": "do nothing"}, "answer": "B", "exp": "Okinawans never drive when they can walk แปลว่า ชาวโอกินาวาไม่เคยขับรถเลยเมื่อพวกเขาสามารถเดินได้"}, {"num": 15, "unit": "Unit 1: Lifestyle", "topic": "Word building: do, play, and go", "q": "I usually play ________ with my friends when we meet at each other's houses.", "options": {"A": "cards", "B": "running", "C": "homework", "D": "karate"}, "answer": "A", "exp": "play ใช้กับบอร์ดเกม กีฬาประเภททีม หรือเกมอย่าง play cards (เล่นการ์ด/ไพ่)"}, {"num": 16, "unit": "Unit 1: Lifestyle", "topic": "Word building: do, play, and go", "q": "His younger brother does ________ and has already earned a black belt.", "options": {"A": "football", "B": "hiking", "C": "karate", "D": "shopping"}, "answer": "C", "exp": "does karate เป็นคอลโลเคชันที่ถูกต้องสำหรับกีฬาต่อสู้ป้องกันตัว"}, {"num": 17, "unit": "Unit 1: Lifestyle", "topic": "Word building: do, play, and go", "q": "Let's go ________ this Saturday at the new shopping mall.", "options": {"A": "nothing", "B": "shopping", "C": "yoga", "D": "tennis"}, "answer": "B", "exp": "go shopping คือคอลโลเคชันที่ถูกต้อง หมายถึง ไปซื้อของ"}, {"num": 18, "unit": "Unit 1: Lifestyle", "topic": "Word building: do, play, and go", "q": "She is extremely good at playing ________; she has practiced since she was seven.", "options": {"A": "the piano", "B": "running", "C": "gymnastics", "D": "homework"}, "answer": "A", "exp": "play the piano เป็นการใช้ play คู่กับเครื่องดนตรีที่มี the นำหน้า"}, {"num": 19, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & present continuous", "q": "While she is cooking, her father ________ TV.", "options": {"A": "is watching", "B": "watches", "C": "watched", "D": "watch"}, "answer": "B", "exp": "ประโยคนี้ประกอบด้วย Present Continuous และ Present Simple: While she is cooking (กำลังทำอาหาร), her father watches TV (ดูทีวีเป็นประจำในขณะนั้น)"}, {"num": 20, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & present continuous", "q": "When I get home, my mother ________ dinner.", "options": {"A": "is cooking", "B": "cooks", "C": "cook", "D": "is cook"}, "answer": "A", "exp": "โครงสร้าง When + Present Simple (get), Present Continuous (is cooking) แสดงว่าขณะที่ฉันกลับถึงบ้าน แม่กำลังทำอาหารอยู่พอดี"}, {"num": 21, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & present continuous", "q": "A: Where is your sister? B: She ________ in the library. She has an exam tomorrow.", "options": {"A": "studies", "B": "study", "C": "is studying", "D": "studied"}, "answer": "C", "exp": "กำลังเกิดขึ้นขณะที่พูด (right now) และสอดคล้องกับความจำเป็นเพราะมีสอบพรุ่งนี้ จึงต้องใช้ Present Continuous"}, {"num": 22, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & present continuous", "q": "My father usually ________ coffee in the morning, but today he ________ tea.", "options": {"A": "drinks / is drinking", "B": "is drinking / drinks", "C": "drink / drinks", "D": "drinks / drinks"}, "answer": "A", "exp": "เหตุการณ์แรกมี usually เป็นนิสัยประจำวันใช้ Present Simple (drinks) ส่วนครึ่งหลังมี but today แสดงความแตกต่างเฉพาะวันนี้ใช้ Present Continuous (is drinking)"}, {"num": 23, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & present continuous", "q": "The Earth ________ around the Sun, but many people ________ about climate change these days.", "options": {"A": "is going / worry", "B": "goes / are worrying", "C": "goes / worry", "D": "is going / are worrying"}, "answer": "B", "exp": "The Earth goes around the sun เป็นความจริงตามธรรมชาติ (Present Simple) ส่วนครึ่งหลังพูดถึงสถานการณ์ที่มีการเปลี่ยนแปลงในช่วงนี้ these days ใช้ Present Continuous (are worrying)"}, {"num": 24, "unit": "Unit 1: Lifestyle", "topic": "Grammar: present simple & present continuous", "q": "Please don't turn off the computer. I ________ it now.", "options": {"A": "use", "B": "used", "C": "am using", "D": "uses"}, "answer": "C", "exp": "มีคำว่า now บ่งบอกถึงเหตุการณ์ที่กำลังทำอยู่ ณ ขณะนี้ ต้องใช้ Present Continuous (am using)"}, {"num": 25, "unit": "Unit 1: Lifestyle", "topic": "Word focus: feel", "q": "After spending hours indoors, do you often feel ________ going outside for a walk?", "options": {"A": "that", "B": "like", "C": "better", "D": "tired"}, "answer": "B", "exp": "feel like + -ing มีความหมายว่า อยากทำกิจกรรมนั้นๆ"}, {"num": 26, "unit": "Unit 1: Lifestyle", "topic": "Word focus: feel", "q": "Many doctors feel ________ this lack of outdoor exercise is making our physical health worse.", "options": {"A": "better", "B": "like", "C": "that", "D": "out"}, "answer": "C", "exp": "feel that + clause มีความหมายว่า มีความเห็นว่า / คิดว่า"}, {"num": 27, "unit": "Unit 1: Lifestyle", "topic": "Word focus: feel", "q": "If you work for hours at your office desk, you will feel ________ when you visit your local park.", "options": {"A": "better", "B": "like", "C": "that", "D": "stress"}, "answer": "A", "exp": "feel better หมายถึง รู้สึกดีขึ้น หรือผ่อนคลายขึ้น"}, {"num": 28, "unit": "Unit 1: Lifestyle", "topic": "Word focus: feel", "q": "I am currently not eating any sweets and I feel ________.", "options": {"A": "like", "B": "healthier", "C": "that", "D": "worse"}, "answer": "B", "exp": "feel + adjective (healthier) บอกถึงสุขภาพที่ดีขึ้นจากการไม่กินของหวาน"}, {"num": 29, "unit": "Unit 1: Lifestyle", "topic": "Word focus: feel", "q": "After a difficult and stressful day, what makes you feel ________ in the evening?", "options": {"A": "better", "B": "like", "C": "that", "D": "worse"}, "answer": "A", "exp": "feel better แปลว่า รู้สึกดีขึ้น (จากสภาวะเหน็ดเหนื่อยหรือเหนื่อยล้า)"}, {"num": 30, "unit": "Unit 1: Lifestyle", "topic": "Reading passage: \"Nature is good for you\"", "q": "According to the article, only ________ of teenagers in countries such as the USA spend time outside every day.", "options": {"A": "5%", "B": "10%", "C": "15%", "D": "20%"}, "answer": "B", "exp": "จากบทความ: in countries such as the USA, only 10% of teenagers spend time outside every day."}, {"num": 31, "unit": "Unit 1: Lifestyle", "topic": "Reading passage: \"Nature is good for you\"", "q": "In the study by Dr. Matilda van den Bosch, what happened to the heart rates of people who sat in a 3D-virtual-reality room with pictures and sounds of nature after their math test?", "options": {"A": "Their heart rates became faster.", "B": "Their heart rates became slower than the other group's.", "C": "Their heart rates stopped beating.", "D": "There was no change in their heart rates."}, "answer": "B", "exp": "จากบทความ: Their heart rates were slower than people's in the other group. The virtual contact with nature helped them feel more relaxed."}, {"num": 32, "unit": "Unit 1: Lifestyle", "topic": "Reading passage: \"Nature is good for you\"", "q": "In Toronto, researchers studied 31,000 people and found that overall, healthier people lived near ________.", "options": {"A": "shopping malls", "B": "city centres", "C": "parks", "D": "offices"}, "answer": "C", "exp": "จากบทความ: Overall, they found that healthier people lived near parks."}, {"num": 33, "unit": "Unit 1: Lifestyle", "topic": "Reading passage: \"Nature is good for you\"", "q": "What is being planned in Dubai to allow shoppers to relax outside with trees and water?", "options": {"A": "A new forest school", "B": "A new virtual reality room", "C": "A new national park", "D": "A new shopping mall with a large garden"}, "answer": "D", "exp": "จากบทความ: In Dubai, for example, there are plans for a new shopping mall with a large garden so shoppers can relax outside with trees, plants and water."}, {"num": 34, "unit": "Unit 1: Lifestyle", "topic": "Reading passage: \"Nature is good for you\"", "q": "In Switzerland, children study their subjects outside and do a lot of exercise in popular ________.", "options": {"A": "forest schools", "B": "virtual reality rooms", "C": "national parks", "D": "shopping malls"}, "answer": "A", "exp": "จากบทความ: In some countries such as Switzerland, forest schools are popular, schoolchildren study their subjects in the forests and do lots of exercise outside."}, {"num": 35, "unit": "Unit 2: Competitions", "topic": "Vocabulary: sport", "q": "Runners at the Olympic Games get a gold ________ when they win a race.", "options": {"A": "goal", "B": "points", "C": "medal", "D": "match"}, "answer": "C", "exp": "ตามบทเรียน: Runners at the Olympic Games get a gold medal when they win a race."}, {"num": 36, "unit": "Unit 2: Competitions", "topic": "Vocabulary: sport", "q": "A rugby ________ lasts eighty minutes while a football match lasts ninety minutes.", "options": {"A": "goal", "B": "points", "C": "medal", "D": "match"}, "answer": "D", "exp": "match ใช้เรียกการแข่งขันกีฬาอย่างรักบี้หรือฟุตบอล (A rugby match lasts eighty minutes.)"}, {"num": 37, "unit": "Unit 2: Competitions", "topic": "Vocabulary: sport", "q": "In football, there are eleven ________ on each side.", "options": {"A": "teams", "B": "referees", "C": "players", "D": "spectators"}, "answer": "C", "exp": "ตามบทเรียน: In football, there are eleven players on each side."}, {"num": 38, "unit": "Unit 2: Competitions", "topic": "Vocabulary: sport", "q": "How many ________ did your team score in the game last Sunday?", "options": {"A": "goals", "B": "race", "C": "medal", "D": "champion"}, "answer": "A", "exp": "goals บ่งบอกถึงการทำประตูในการแข่งขันกีฬา เช่น ฟุตบอล (How many goals did you score?)"}, {"num": 39, "unit": "Unit 2: Competitions", "topic": "Vocabulary: sport", "q": "At the beginning of the championship, there are twenty-four ________ competing.", "options": {"A": "goals", "B": "teams", "C": "players", "D": "medals"}, "answer": "B", "exp": "championship (การชิงแชมป์) มักเริ่มต้นด้วยการมีหลาย teams เข้ามาแข่งขันร่วมกัน"}, {"num": 40, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "In golf, you ________ hit the ball into nine or eighteen holes.", "options": {"A": "don't have to", "B": "have to", "C": "mustn't", "D": "can't"}, "answer": "B", "exp": "ตามกฎกติกาการเล่นกอล์ฟ ถือเป็นข้อบังคับ (obligatory) ต้องใช้ have to"}, {"num": 41, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "Competitors ________ argue with the referee; otherwise, they will get a penalty.", "options": {"A": "can", "B": "don't have to", "C": "mustn't", "D": "have to"}, "answer": "C", "exp": "mustn't ใช้เมื่อกฎกติกาไม่อนุญาตเด็ดขาด (ห้ามทำเด็ดขาด)"}, {"num": 42, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "In football, a goalkeeper is the only player who ________ pick up the ball with hands.", "options": {"A": "has to", "B": "must", "C": "can", "D": "don't have to"}, "answer": "C", "exp": "can ใช้แสดงความสามารถหรือการอนุญาตตามกติกา (goalkeeper ได้รับอนุญาตให้จับบอลได้ด้วยมือ)"}, {"num": 43, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "Players ________ throw the ball backwards in rugby; they cannot throw it forward.", "options": {"A": "mustn't", "B": "don't have to", "C": "can't", "D": "must"}, "answer": "D", "exp": "ในการเล่นรักบี้กฎระบุชัดเจนว่าผู้เล่นจำเป็นต้องส่งบอลไปข้างหลังเท่านั้น จึงใช้ must"}, {"num": 44, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "A referee ________ send a player off the pitch when he breaks the rules of the game.", "options": {"A": "can", "B": "don't have to", "C": "mustn't", "D": "has to"}, "answer": "A", "exp": "ผู้ตัดสินได้รับอำนาจ/สิทธิ์ที่จะไล่ผู้เล่นออกนอกสนามได้ จึงใช้ can"}, {"num": 45, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "In the Beard and Moustache competition, you ________ be over eighteen years old.", "options": {"A": "don't have to", "B": "must", "C": "can't", "D": "mustn't"}, "answer": "B", "exp": "ตามกติกาของ Beard and Moustache competition ในชีทเรียน ถือเป็นไฟต์บังคับที่อายุต้องเกิน 18 ปี"}, {"num": 46, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "There are eighteen different categories, but competitors ________ only enter one category.", "options": {"A": "don't have to", "B": "can", "C": "must", "D": "have to"}, "answer": "B", "exp": "ตามกติกาการแข่งขัน ผู้เข้าประกวดได้รับอนุญาตให้ลงสมัครแข่งขันได้เพียง 1 ประเภท (can only enter...)"}, {"num": 47, "unit": "Unit 2: Competitions", "topic": "Grammar: verbs for rules", "q": "You ________ have the longest moustache or the biggest beard to win a prize, because there are multiple categories.", "options": {"A": "mustn't", "B": "can't", "C": "don't have to", "D": "have to"}, "answer": "C", "exp": "don't have to ใช้เมื่อบางสิ่งไม่จำเป็น แต่ก็สามารถทำได้ เนื่องจากมี 18 หมวดหมู่ให้เลือกแข่ง จึงไม่จำเป็นต้องมีหนวดยาวที่สุดเพื่อชนะ"}, {"num": 48, "unit": "Unit 2: Competitions", "topic": "Word building: suffixes", "q": "Lionel Messi is very famous in my country. He is a professional ________.", "options": {"A": "football player", "B": "footballer", "C": "footballist", "D": "football play"}, "answer": "B", "exp": "กีฬา football เติม suffix -er เพื่อระบุตัวผู้เล่นเป็น footballer"}, {"num": 49, "unit": "Unit 2: Competitions", "topic": "Word building: suffixes", "q": "A person who rides a bicycle, especially in races, is called a ________.", "options": {"A": "cycler", "B": "cycling player", "C": "cyclist", "D": "cycle player"}, "answer": "C", "exp": "ตามบทเรียน: cycle เติม suffix -ist เป็น cyclist"}, {"num": 50, "unit": "Unit 2: Competitions", "topic": "Word building: suffixes", "q": "Usain Bolt is a legendary track and field ________ who won multiple Olympic gold medals.", "options": {"A": "athlete", "B": "athletist", "C": "athletics player", "D": "athlet_er"}, "answer": "A", "exp": "กีฬา athletics สำหรับคนเล่นจะใช้คำเฉพาะคือ athlete ไม่ได้เติม -er หรือ -player"}, {"num": 51, "unit": "Unit 2: Competitions", "topic": "Word building: suffixes", "q": "She trains in the gym every day to become an Olympic ________.", "options": {"A": "gymner", "B": "gymnast", "C": "gymnastics player", "D": "gymnerist"}, "answer": "B", "exp": "ผู้เล่นยิมนาสติกเรียกว่า gymnast"}, {"num": 52, "unit": "Unit 2: Competitions", "topic": "Word building: suffixes", "q": "Billie Jean King is a famous ________ who fought for gender equality in sports.", "options": {"A": "tenniser", "B": "tennisist", "C": "tennis player", "D": "tennis athlete"}, "answer": "C", "exp": "กีฬา tennis ต้องเติมคำว่า player ท้ายชื่อเพื่อเป็นผู้เล่น เช่น tennis player"}, {"num": 53, "unit": "Unit 2: Competitions", "topic": "Grammar: -ing form (Gerund)", "q": "________ to win and lose is important in a child's education.", "options": {"A": "Learn", "B": "To learn", "C": "Learning", "D": "Learnt"}, "answer": "C", "exp": "ในประโยคนี้ Gerund (-ing form: Learning) ทำหน้าที่เป็น ประธาน (Subject) ของประโยค"}, {"num": 54, "unit": "Unit 2: Competitions", "topic": "Grammar: -ing form (Gerund)", "q": "Competitive sports in schools are good for ________ children teamwork and discipline.", "options": {"A": "teach", "B": "teaching", "C": "taught", "D": "to teach"}, "answer": "B", "exp": "คำกริยาเติม -ing (teaching) ต้องใช้เมื่อตามหลังคำบุพบท (preposition: for)"}, {"num": 55, "unit": "Unit 2: Competitions", "topic": "Grammar: -ing form (Gerund)", "q": "Some parents hate ________ in any school matches and get angry with their children.", "options": {"A": "lose", "B": "lost", "C": "losing", "D": "to lose"}, "answer": "C", "exp": "ตามหลังคำกริยาแสดงความรู้สึกรัก/เกลียด เช่น hate ต้องตามด้วย -ing form (losing)"}, {"num": 56, "unit": "Unit 2: Competitions", "topic": "Grammar: -ing form (Gerund)", "q": "I am bored with ________ nothing. Let's go out for a walk.", "options": {"A": "do", "B": "doing", "C": "did", "D": "done"}, "answer": "B", "exp": "doing (Gerund) ตามหลัง preposition with (bored with ...)"}, {"num": 57, "unit": "Unit 2: Competitions", "topic": "Grammar: -ing form (Gerund)", "q": "A champion is not afraid of ________ a game.", "options": {"A": "lose", "B": "losing", "C": "lost", "D": "loses"}, "answer": "B", "exp": "losing เป็น -ing form ที่ตามหลังบุพบท of (afraid of ...)"}, {"num": 58, "unit": "Unit 2: Competitions", "topic": "Grammar: -ing form (Gerund)", "q": "I really enjoy ________ the Tour de France on television.", "options": {"A": "watching", "B": "watch", "C": "to watch", "D": "watched"}, "answer": "A", "exp": "watching เป็นกริยาช่อง -ing ที่ต้องใช้หลังคำกริยาเฉพาะอย่าง enjoy"}, {"num": 59, "unit": "Unit 2: Competitions", "topic": "Grammar: -ing form (Gerund)", "q": "Nomping doesn't like ________ Mangkon.", "options": {"A": "tease", "B": "teasing", "C": "teased", "D": "to tease"}, "answer": "B", "exp": "ตามหลังคำกริยา like / dislike ต้องใช้ -ing form (teasing)"}, {"num": 60, "unit": "Unit 2: Competitions", "topic": "Word focus: like", "q": "Yolanda and Claudina are ________ famous pop stars in Bolivia.", "options": {"A": "would like", "B": "look like", "C": "like", "D": "liking"}, "answer": "C", "exp": "ใช้ are like (be like) เพื่ออธิบายความเหมือนหรือเปรียบเทียบความคล้ายคลึง (เหมือนกับซูเปอร์สตาร์)"}, {"num": 61, "unit": "Unit 2: Competitions", "topic": "Word focus: like", "q": "________ your daughters like to become professional wrestlers one day?", "options": {"A": "Do", "B": "Would", "C": "Are", "D": "Will"}, "answer": "B", "exp": "ใช้ Would you/your... like to + verb เพื่อถามถึงความปรารถนาหรือเป้าหมายในอนาคต"}, {"num": 62, "unit": "Unit 2: Competitions", "topic": "Word focus: like", "q": "Are you ________ anyone in your family? Maybe your mother?", "options": {"A": "like", "B": "look", "C": "liking", "D": "likes"}, "answer": "A", "exp": "be + like (Are you like...) ใช้ถามว่าคุณมีลักษณะที่เหมือนหรือคล้ายใครในครอบครัวหรือไม่"}, {"num": 63, "unit": "Unit 2: Competitions", "topic": "Word focus: like", "q": "I usually feel like ________ outside for a run after study hours.", "options": {"A": "go", "B": "going", "C": "to go", "D": "went"}, "answer": "B", "exp": "feel like ต้องตามด้วย -ing (going) แปลว่า อยากทำ..."}, {"num": 64, "unit": "Unit 2: Competitions", "topic": "Reading passage: \"Bolivian wrestlers\"", "q": "Although football is Bolivia's national sport, what other sport is the country highly famous for?", "options": {"A": "Boxing", "B": "Wrestling", "C": "Karate", "D": "Chess"}, "answer": "B", "exp": "จากบทความ: In Bolivia, football is the country's national sport but the country is also famous for another sport - wrestling."}, {"num": 65, "unit": "Unit 2: Competitions", "topic": "Reading passage: \"Bolivian wrestlers\"", "q": "When modern wrestling started in Bolivia in the 1950s, the competitors were all men, but nowadays ________.", "options": {"A": "only tourists can participate", "B": "women are also competing in the ring", "C": "children are the main wrestlers", "D": "it is banned in the country"}, "answer": "B", "exp": "จากบทความ: When modern wrestling started in Bolivia in the 1950s, the competitors were all men, but nowadays women are also competing in the ring."}, {"num": 66, "unit": "Unit 2: Competitions", "topic": "Reading passage: \"Bolivian wrestlers\"", "q": "Which city in Bolivia is described as a great place to watch the wrestling, where hundreds of spectators gather?", "options": {"A": "La Paz", "B": "Sucre", "C": "El Alto", "D": "Santa Cruz"}, "answer": "C", "exp": "จากบทความ: The city of El Alto is a good place to watch the wrestling. Hundreds of spectators go to the fights..."}, {"num": 67, "unit": "Unit 2: Competitions", "topic": "Reading passage: \"Bolivian wrestlers\"", "q": "Away from the ring, Yolanda has a normal, quiet life. What does she do to make a living?", "options": {"A": "She is a full-time school teacher.", "B": "She makes clothes.", "C": "She works in a local restaurant.", "D": "She is a professional photographer."}, "answer": "B", "exp": "จากบทความ: At home Yolanda has a normal and quiet family life. She has two daughters and she makes clothes for a living."}, {"num": 68, "unit": "Unit 2: Competitions", "topic": "Reading passage: \"Bolivian wrestlers\"", "q": "Why does Esperanza Cancina pay $1.50 (a large part of her salary) to watch the wrestling?", "options": {"A": "To see her daughter fight in the ring", "B": "To learn how to wrestle himself", "C": "Because she says they laugh and forget their problems for three or four hours", "D": "To take pictures of Yolanda and Claudina"}, "answer": "C", "exp": "จากบทความ: Esperanza likes watching the wrestling because she says “We laugh and we forget our problems for three or four hours.”"}, {"num": 69, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "We were stuck in a terrible ________ for hours during the morning rush hour.", "options": {"A": "speed limit", "B": "traffic jam", "C": "carbon emissions", "D": "fuel costs"}, "answer": "B", "exp": "traffic jam คือ รถติดอย่างหนักเป็นแถวยาว"}, {"num": 70, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "The ________ starts early in the morning because lots of people travel to work at the same time.", "options": {"A": "speed limit", "B": "rush hour", "C": "container ships", "D": "fuel costs"}, "answer": "B", "exp": "rush hour คือ ชั่วโมงเร่งด่วนในเวลาเช้าหรือเย็นที่มีคนเดินทางคับคั่ง"}, {"num": 71, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "The shipping company uses huge kites on their ships to reduce their high ________.", "options": {"A": "speed limit", "B": "carbon emissions", "C": "fuel costs", "D": "traffic jams"}, "answer": "C", "exp": "fuel costs คือ ค่าเชื้อเพลิง ซึ่งการใช้ใบปลิวยักษ์ช่วยลดต้นทุนนี้ลง"}, {"num": 72, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "Driverless cars are safer because the computer controls the speed and they cannot exceed the ________.", "options": {"A": "speed limit", "B": "rush hour", "C": "traffic jam", "D": "fuel costs"}, "answer": "A", "exp": "speed limit คือ ขีดจำกัดความเร็วทางกฎหมาย"}, {"num": 73, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "Most products and goods are transported across the ocean on massive ________.", "options": {"A": "container ships", "B": "monorails", "C": "electric rickshaws", "D": "pedicabs"}, "answer": "A", "exp": "container ships คือ เรือสินค้าขนาดใหญ่ที่ใช้ขนสินค้าตู้คอนเทนเนอร์เดินทางข้ามทวีป"}, {"num": 74, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "There are already plans for the first Hyperloop to connect the ________ of San Francisco and Los Angeles.", "options": {"A": "carbon emissions", "B": "city centres", "C": "speed limits", "D": "bus stops"}, "answer": "B", "exp": "city centres คือ ใจกลางเมืองหลวงหรือศูนย์กลางของเมือง"}, {"num": 75, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "Using electric vehicles or solar-powered cars can help reduce dangerous ________.", "options": {"A": "carbon emissions", "B": "fuel costs", "C": "traffic jams", "D": "speed limits"}, "answer": "A", "exp": "carbon emissions คือ ปริมาณก๊าซคาร์บอนที่ปล่อยออกมาสู่อากาศ"}, {"num": 76, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport nouns (compound nouns)", "q": "Please wait for me at the ________; the next bus will arrive in five minutes.", "options": {"A": "airport", "B": "bus stop", "C": "city centre", "D": "speed limit"}, "answer": "B", "exp": "bus stop คือ ป้ายจอดรถประจำทาง"}, {"num": 77, "unit": "Unit 3: Transport", "topic": "Grammar: comparatives & superlatives", "q": "A London bus is a lot ________ expensive than taking a black cab.", "options": {"A": "more", "B": "much", "C": "less", "D": "least"}, "answer": "C", "exp": "ตามบทเรียนลอนดอนบัสราคา 5 ปอนด์ ส่วนแบล็คแค็บราคาแพงกว่ามาก ดังนั้นบัสจึงเป็น a lot less expensive"}, {"num": 78, "unit": "Unit 3: Transport", "topic": "Grammar: comparatives & superlatives", "q": "Black-cab drivers say their cabs are ________ faster in heavy rush-hour traffic because they know the best routes.", "options": {"A": "slightly", "B": "much", "C": "a little", "D": "a bit"}, "answer": "B", "exp": "much ใช้เพื่อขยายความต่างที่มาก (big difference) ก่อนหน้ากริยาเปรียบเทียบขั้นกว่า (faster) ตามชีทเรียน"}, {"num": 79, "unit": "Unit 3: Transport", "topic": "Grammar: comparatives & superlatives", "q": "Sometimes private taxis booked via mobile apps are also a ________ cheaper and a little faster.", "options": {"A": "much", "B": "lot", "C": "bit", "D": "far"}, "answer": "C", "exp": "a bit ใช้คู่กับ comparative adjective (cheaper) เพื่อระบุความแตกต่างเพียงเล็กน้อย (small difference)"}, {"num": 80, "unit": "Unit 3: Transport", "topic": "Grammar: comparatives & superlatives", "q": "P'Matoey is ________ beautiful than P'Phum.", "options": {"A": "many", "B": "more", "C": "most", "D": "the most"}, "answer": "B", "exp": "คำว่า beautiful เป็นคำหลายพยางค์ ในประโยคเปรียบเทียบขั้นกว่าต้องใช้ more beautiful than"}, {"num": 81, "unit": "Unit 3: Transport", "topic": "Grammar: comparatives & superlatives", "q": "A new electric car is the ________ expensive type of vehicle on the market today.", "options": {"A": "most", "B": "more", "C": "much", "D": "very"}, "answer": "A", "exp": "the most + long adjective (expensive) เพื่อบอกขั้นสูงสุด"}, {"num": 82, "unit": "Unit 3: Transport", "topic": "Grammar: comparatives & superlatives", "q": "My bicycle is ________ than your car during the heavy morning rush hour.", "options": {"A": "fast", "B": "faster", "C": "fastest", "D": "more fast"}, "answer": "B", "exp": "เปรียบเทียบสองสิ่ง มี than นำมาใช้แสดงถึงการเป็นขั้นกว่า (faster)"}, {"num": 83, "unit": "Unit 3: Transport", "topic": "Grammar: comparatives & superlatives", "q": "Which form of public transport is the ________ popular for commuting in your city?", "options": {"A": "more", "B": "much", "C": "most", "D": "worse"}, "answer": "C", "exp": "the + most popular เป็นโครงสร้างขั้นสูงสุด (superlative)"}, {"num": 84, "unit": "Unit 3: Transport", "topic": "as ... as", "q": "In winter, northern Alaska can be ________ cold ________ the North Pole.", "options": {"A": "as / than", "B": "as / as", "C": "more / than", "D": "not as / as"}, "answer": "B", "exp": "as + adjective + as ใช้บอกว่าสองสิ่งมีความเท่าเทียมกัน (หนาวเทียบเท่ากับขั้วโลกเหนือ)"}, {"num": 85, "unit": "Unit 3: Transport", "topic": "as ... as", "q": "For long distances, modern vehicles are not ________ good ________ camels.", "options": {"A": "as / as", "B": "as / than", "C": "more / than", "D": "most / than"}, "answer": "A", "exp": "not as + adjective + as ใช้บอกความแตกต่างว่าสิ่งแรกดีไม่เท่าสิ่งหลัง (ยานพาหนะทันสมัยดีไม่เท่าอูฐเมื่อวิ่งระยะไกล)"}, {"num": 86, "unit": "Unit 3: Transport", "topic": "as ... as", "q": "An underground train across London isn't ________ expensive ________ a taxi.", "options": {"A": "so / than", "B": "as / as", "C": "as / than", "D": "more / than"}, "answer": "B", "exp": "not as expensive as แปลว่า แพงไม่เท่ากับ (รถไฟใต้ดินไม่แพงเท่าแท็กซี่)"}, {"num": 87, "unit": "Unit 3: Transport", "topic": "as ... as", "q": "The journey by train is ________ fast ________ the bus when there is no traffic jam.", "options": {"A": "as / as", "B": "more / than", "C": "as / than", "D": "not as / as"}, "answer": "A", "exp": "as fast as แสดงความเร็วที่เท่ากันระหว่างรถไฟกับรถบัสหากไม่มีรถติด"}, {"num": 88, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport adjectives", "q": "A ________ train or taxi always arrives on time at the scheduled hour.", "options": {"A": "comfortable", "B": "punctual", "C": "traditional", "D": "frequent"}, "answer": "B", "exp": "punctual แปลว่า ตรงต่อเวลา (It's always on time.)"}, {"num": 89, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport adjectives", "q": "On any main road in London, there are ________ cabs so you don't have to wait long.", "options": {"A": "reliable", "B": "punctual", "C": "comfortable", "D": "frequent"}, "answer": "D", "exp": "frequent แปลว่า ถี่/บ่อย มีรถวิ่งมาบ่อยๆ สม่ำเสมอ"}, {"num": 90, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport adjectives", "q": "The seats of these luxury coaches are extremely soft, making them very ________ to ride in.", "options": {"A": "traditional", "B": "comfortable", "C": "punctual", "D": "convenient"}, "answer": "B", "exp": "comfortable แปลว่า นั่งสบาย ผ่อนคลาย (It's nice to sit in.)"}, {"num": 91, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport adjectives", "q": "Private taxis booked online are sometimes seen as less ________ in rush-hour traffic compared to traditional black cabs.", "options": {"A": "convenient", "B": "reliable", "C": "comfortable", "D": "traditional"}, "answer": "B", "exp": "reliable แปลว่า เชื่อถือได้/ไว้ใจได้ (ในที่นี้คือแท็กซี่แอปไว้ใจไม่ได้ในเวลารถติดเพราะคนขับไม่รู้เส้นทางเลี่ยง)"}, {"num": 92, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport verbs", "q": "Can you ________ the children from school on your way home?", "options": {"A": "catch", "B": "get on", "C": "pick up", "D": "drop off"}, "answer": "C", "exp": "pick up คือ การแวะรับคน (ในที่นี้คือแวะรับเด็กๆ จากโรงเรียน)"}, {"num": 93, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport verbs", "q": "We must leave now or we will ________ our next train.", "options": {"A": "catch", "B": "miss", "C": "go by", "D": "get on"}, "answer": "B", "exp": "miss (the train) แปลว่า ตกรถไฟ หรือ พลาดโอกาสเดินทาง"}, {"num": 94, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport verbs", "q": "Let's park our car here and ________ on foot to avoid the traffic jam in the city centre.", "options": {"A": "catch", "B": "get on", "C": "go", "D": "drop off"}, "answer": "C", "exp": "go on foot เป็นสำนวนที่ใช้กับการเดินด้วยเท้าเปล่าหรือการเดิน"}, {"num": 95, "unit": "Unit 3: Transport", "topic": "Vocabulary: transport verbs", "q": "Please ask the taxi driver to ________ me ________ outside the main entrance.", "options": {"A": "drop / off", "B": "pick / up", "C": "get / on", "D": "go / by"}, "answer": "A", "exp": "drop (someone) off แปลว่า จอดให้คนลงรถ"}, {"num": 96, "unit": "Unit 3: Transport", "topic": "Reading passage: \"The end of the road\"", "q": "Kolkata, which is famous for its traditional hand-pulled rickshaws, is the capital of ________ in India.", "options": {"A": "West Bengal", "B": "New Delhi", "C": "Mumbai", "D": "Rajasthan"}, "answer": "A", "exp": "จากบทความ: Kolkata is the capital of West Bengal in India."}, {"num": 97, "unit": "Unit 3: Transport", "topic": "Reading passage: \"The end of the road\"", "q": "Why do housewives in Kolkata often prefer to go by hand-pulled rickshaws to local markets?", "options": {"A": "Because they are faster than the underground trains.", "B": "Because the driver drops them off with their shopping right outside their house.", "C": "Because they are the most expensive type of transport.", "D": "Because they have modern electric engines."}, "answer": "B", "exp": "จากบทความ: housewives often prefer to go by rickshaw to the local markets. The driver drops the women off with their shopping outside their house..."}, {"num": 98, "unit": "Unit 3: Transport", "topic": "Reading passage: \"The end of the road\"", "q": "Some local politicians in Kolkata do not like the famous traditional rickshaws because they think ________.", "options": {"A": "they are too cheap for tourists", "B": "it is wrong for one human to pull other humans", "C": "they are too fast for narrow streets", "D": "they produce too much carbon emission"}, "answer": "B", "exp": "จากบทความ: Some local politicians don't like this old type of transport because they think it's wrong for one human to pull other humans."}, {"num": 99, "unit": "Unit 3: Transport", "topic": "Reading passage: \"The end of the road\"", "q": "Approximately how many traditional hand-pulled rickshaw drivers are there in Kolkata?", "options": {"A": "500", "B": "1,000", "C": "2,000", "D": "15 million"}, "answer": "C", "exp": "จากบทความ: The problem is that Kolkata has around 2,000 rickshaw drivers who pull their passengers by hand."}, {"num": 100, "unit": "Unit 3: Transport", "topic": "Reading passage: \"The end of the road\"", "q": "Why can't traditional hand-pulled rickshaw drivers easily switch to modern electric rickshaws?", "options": {"A": "Because electric rickshaws are too slow.", "B": "Because the government has banned electric engines.", "C": "Because new electric rickshaws are very expensive and the drivers cannot afford them.", "D": "Because the drivers prefer to pull passengers in heavy rain."}, "answer": "C", "exp": "จากบทความ: The new electric rickshaws are very expensive, so these drivers can't afford them."}]
+</script>
+
+<script>
+(function(){
+"use strict";
+
+var ALL_QUESTIONS = JSON.parse(document.getElementById('questions-data').textContent);
+var UNIT_ORDER = [];
+ALL_QUESTIONS.forEach(function(q){ if(UNIT_ORDER.indexOf(q.unit)===-1) UNIT_ORDER.push(q.unit); });
+
+var state = {
+  questions: [],      // active question set for this run
+  answers: {},         // num -> "A"/"B"/"C"/"D"
+  current: 0,
+  timerId: null,
+  seconds: 0,
+  submitted: false,
+  reviewFilter: 'all'
+};
+
+var selectedMode = 'full';
+var selectedUnits = {}; // unit -> bool
+UNIT_ORDER.forEach(function(u){ selectedUnits[u] = true; });
+
+/* ---------------- helpers ---------------- */
+function $(id){ return document.getElementById(id); }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  $(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant':'auto'});
+}
+function fmtTime(sec){
+  var m = Math.floor(sec/60), s = sec%60;
+  return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+function pct(n,d){ return d===0?0:Math.round((n/d)*1000)/10; }
+
+/* ---------------- cover screen ---------------- */
+function buildUnitChips(){
+  var row = $('unitChipRow');
+  row.innerHTML = '';
+  UNIT_ORDER.forEach(function(u){
+    var chip = document.createElement('div');
+    chip.className = 'unit-chip on';
+    chip.textContent = u;
+    chip.dataset.unit = u;
+    chip.addEventListener('click', function(){
+      selectedUnits[u] = !selectedUnits[u];
+      chip.classList.toggle('on', selectedUnits[u]);
+    });
+    row.appendChild(chip);
+  });
+}
+buildUnitChips();
+
+document.querySelectorAll('.mode-card').forEach(function(card){
+  card.addEventListener('click', function(){
+    document.querySelectorAll('.mode-card').forEach(function(c){ c.classList.remove('selected'); });
+    card.classList.add('selected');
+    selectedMode = card.dataset.mode;
+    $('unitPicker').classList.toggle('show', selectedMode === 'unit');
+  });
+});
+
+$('startBtn').addEventListener('click', function(){
+  var qs;
+  if(selectedMode === 'unit'){
+    qs = ALL_QUESTIONS.filter(function(q){ return selectedUnits[q.unit]; });
+    if(qs.length === 0){
+      alert('กรุณาเลือกอย่างน้อย 1 หน่วยการเรียนรู้');
+      return;
+    }
+  } else {
+    qs = ALL_QUESTIONS.slice();
+  }
+  startExam(qs);
+});
+
+/* ---------------- exam engine ---------------- */
+function startExam(qs){
+  state.questions = qs;
+  state.answers = {};
+  state.current = 0;
+  state.seconds = 0;
+  state.submitted = false;
+  buildBubbleGrid();
+  renderQuestion();
+  showScreen('screen-exam');
+  if(state.timerId) clearInterval(state.timerId);
+  state.timerId = setInterval(function(){
+    state.seconds++;
+    $('timerDisplay').textContent = fmtTime(state.seconds);
+  }, 1000);
+}
+
+function buildBubbleGrid(){
+  var grid = $('bubbleGrid');
+  grid.innerHTML = '';
+  state.questions.forEach(function(q, idx){
+    var b = document.createElement('div');
+    b.className = 'bubble mono';
+    b.textContent = q.num;
+    b.dataset.idx = idx;
+    b.addEventListener('click', function(){
+      state.current = idx;
+      renderQuestion();
+    });
+    grid.appendChild(b);
+  });
+  refreshBubbles();
+}
+
+function refreshBubbles(){
+  var bubbles = document.querySelectorAll('#bubbleGrid .bubble');
+  bubbles.forEach(function(b, idx){
+    var q = state.questions[idx];
+    b.classList.toggle('answered', !!state.answers[q.num]);
+    b.classList.toggle('current', idx === state.current);
+  });
+}
+
+function renderQuestion(){
+  var q = state.questions[state.current];
+  $('qNumTag').textContent = 'Q' + q.num;
+  $('qUnitTag').textContent = q.unit;
+  $('qTopicTag').textContent = q.topic;
+  $('qText').textContent = q.q;
+  $('examProgressLabel').textContent = 'ข้อ ' + (state.current+1) + ' / ' + state.questions.length;
+  $('progressFill').style.width = (((state.current+1)/state.questions.length)*100) + '%';
+
+  var optWrap = $('qOptions');
+  optWrap.innerHTML = '';
+  ['A','B','C','D'].forEach(function(letter){
+    var opt = document.createElement('div');
+    opt.className = 'opt' + (state.answers[q.num] === letter ? ' picked' : '');
+    opt.innerHTML = '<span class="letter mono">'+letter+'</span><span class="otext"></span>';
+    opt.querySelector('.otext').textContent = q.options[letter];
+    opt.addEventListener('click', function(){
+      state.answers[q.num] = letter;
+      renderQuestion();
+      refreshBubbles();
+    });
+    optWrap.appendChild(opt);
+  });
+
+  $('prevBtn').disabled = state.current === 0;
+  $('prevBtn').style.opacity = state.current === 0 ? 0.4 : 1;
+  $('nextBtn').textContent = (state.current === state.questions.length-1) ? 'ข้อสุดท้ายแล้ว' : 'ข้อถัดไป →';
+  refreshBubbles();
+}
+
+$('prevBtn').addEventListener('click', function(){
+  if(state.current > 0){ state.current--; renderQuestion(); }
+});
+$('nextBtn').addEventListener('click', function(){
+  if(state.current < state.questions.length-1){ state.current++; renderQuestion(); }
+});
+
+/* ---------------- submit flow ---------------- */
+var pendingSubmit = false;
+
+$('submitBtn').addEventListener('click', function(){
+  var answeredCount = Object.keys(state.answers).length;
+  var unanswered = state.questions.length - answeredCount;
+  if(unanswered > 0){
+    $('confirmText').textContent = 'คุณยังไม่ได้ตอบอีก ' + unanswered + ' ข้อ จากทั้งหมด ' + state.questions.length + ' ข้อ ต้องการส่งคำตอบเลยหรือไม่?';
+    $('confirmOverlay').classList.add('show');
+  } else {
+    doSubmit();
+  }
+});
+$('confirmCancel').addEventListener('click', function(){
+  $('confirmOverlay').classList.remove('show');
+});
+$('confirmOk').addEventListener('click', function(){
+  $('confirmOverlay').classList.remove('show');
+  doSubmit();
+});
+
+function doSubmit(){
+  state.submitted = true;
+  if(state.timerId) clearInterval(state.timerId);
+  computeResults();
+  showScreen('screen-results');
+}
+
+/* ---------------- results ---------------- */
+var lastResults = null;
+
+function computeResults(){
+  var total = state.questions.length;
+  var correct = 0;
+  var byUnit = {};
+  var byTopic = {};
+
+  state.questions.forEach(function(q){
+    var picked = state.answers[q.num] || null;
+    var isCorrect = picked === q.answer;
+    if(isCorrect) correct++;
+
+    if(!byUnit[q.unit]) byUnit[q.unit] = {correct:0,total:0};
+    byUnit[q.unit].total++;
+    if(isCorrect) byUnit[q.unit].correct++;
+
+    var tkey = q.unit + ' — ' + q.topic;
+    if(!byTopic[tkey]) byTopic[tkey] = {correct:0,total:0};
+    byTopic[tkey].total++;
+    if(isCorrect) byTopic[tkey].correct++;
+  });
+
+  lastResults = { total: total, correct: correct, byUnit: byUnit, byTopic: byTopic };
+
+  var scorePct = pct(correct, total);
+  $('scoreRing').style.setProperty('--pct', scorePct);
+  $('scoreNum').textContent = correct + '/' + total;
+  $('scorePct').textContent = scorePct + '%';
+
+  var headline, sub;
+  if(scorePct >= 80){ headline = 'ยอดเยี่ยมมาก! 🎉'; }
+  else if(scorePct >= 60){ headline = 'ทำได้ดี ใกล้เต็มแล้ว 💪'; }
+  else if(scorePct >= 40){ headline = 'พอใช้ได้ ลองทบทวนเพิ่ม 📖'; }
+  else { headline = 'ยังต้องทบทวนอีกเยอะ สู้ๆ 🔥'; }
+  $('resultHeadline').textContent = headline;
+  $('resultSub').textContent = 'ใช้เวลาทำข้อสอบทั้งหมด ' + fmtTime(state.seconds) + ' สำหรับ ' + total + ' ข้อ';
+
+  // unit breakdown
+  var ub = $('unitBreakdown');
+  ub.innerHTML = '';
+  UNIT_ORDER.forEach(function(u){
+    if(!byUnit[u]) return;
+    var d = byUnit[u];
+    var p = pct(d.correct, d.total);
+    var row = document.createElement('div');
+    row.className = 'ub-row';
+    row.innerHTML =
+      '<div class="ub-top"><span class="name"></span><span class="mono"></span></div>' +
+      '<div class="ub-track"><div class="ub-fill" style="width:'+p+'%"></div></div>';
+    row.querySelector('.name').textContent = u;
+    row.querySelector('.mono').textContent = d.correct + '/' + d.total + ' (' + p + '%)';
+    ub.appendChild(row);
+  });
+
+  // topic table, sorted weakest first
+  var topicKeys = Object.keys(byTopic).sort(function(a,b){
+    return pct(byTopic[a].correct, byTopic[a].total) - pct(byTopic[b].correct, byTopic[b].total);
+  });
+  var tt = $('topicTable');
+  tt.innerHTML = '';
+  topicKeys.forEach(function(k){
+    var d = byTopic[k];
+    var p = pct(d.correct, d.total);
+    var row = document.createElement('div');
+    row.className = 'topic-row';
+    var cls = p < 50 ? 'weak' : (p >= 80 ? 'strong' : '');
+    row.innerHTML = '<span class="tname"></span><span class="tscore mono '+cls+'"></span>';
+    row.querySelector('.tname').textContent = k;
+    row.querySelector('.tscore').textContent = d.correct + '/' + d.total + ' · ' + p + '%';
+    tt.appendChild(row);
+  });
+}
+
+$('retryBtn').addEventListener('click', resetToCover);
+$('retryBtn2').addEventListener('click', resetToCover);
+function resetToCover(){
+  showScreen('screen-cover');
+}
+
+/* ---------------- review screen ---------------- */
+$('reviewBtn').addEventListener('click', function(){
+  state.reviewFilter = 'all';
+  document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.toggle('on', c.dataset.filter==='all'); });
+  renderReview();
+  showScreen('screen-review');
+});
+$('backToResultsBtn').addEventListener('click', function(){ showScreen('screen-results'); });
+
+document.querySelectorAll('.filter-chip').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('on'); });
+    chip.classList.add('on');
+    state.reviewFilter = chip.dataset.filter;
+    renderReview();
+  });
+});
+
+function renderReview(){
+  var list = $('reviewList');
+  list.innerHTML = '';
+  var shown = 0;
+
+  state.questions.forEach(function(q){
+    var picked = state.answers[q.num] || null;
+    var isCorrect = picked === q.answer;
+    var status = picked === null ? 'blank' : (isCorrect ? 'correct' : 'wrong');
+
+    if(state.reviewFilter !== 'all' && state.reviewFilter !== status) return;
+    shown++;
+
+    var card = document.createElement('div');
+    card.className = 'rcard ' + status;
+
+    var badgeText = status==='correct' ? '✓ ตอบถูก' : (status==='wrong' ? '✗ ตอบผิด' : '— ยังไม่ตอบ');
+    var badgeCls = status;
+
+    var top = document.createElement('div');
+    top.className = 'rc-top';
+    top.innerHTML =
+      '<span class="q-num mono" style="background:var(--ink);color:var(--paper);padding:3px 9px;border-radius:5px;font-size:12.5px;">Q'+q.num+'</span>' +
+      '<span class="q-unit" style="font-size:12px;color:var(--gold);font-weight:600;"></span>' +
+      '<span class="q-topic" style="font-size:11.5px;"></span>' +
+      '<span class="rc-badge '+badgeCls+'"></span>';
+    top.querySelector('.q-unit').textContent = q.unit;
+    top.querySelector('.q-topic').textContent = q.topic;
+    top.querySelector('.rc-badge').textContent = badgeText;
+    card.appendChild(top);
+
+    var qEl = document.createElement('p');
+    qEl.className = 'rc-q';
+    qEl.textContent = q.q;
+    card.appendChild(qEl);
+
+    var optsWrap = document.createElement('div');
+    optsWrap.className = 'rc-opts';
+    ['A','B','C','D'].forEach(function(letter){
+      var row = document.createElement('div');
+      var cls = 'rc-opt';
+      var tagHtml = '';
+      if(letter === q.answer){
+        cls += ' is-correct';
+        tagHtml = '<span class="rc-tag tc">เฉลย</span>';
+      } else if(letter === picked && !isCorrect){
+        cls += ' is-wrong-pick';
+        tagHtml = '<span class="rc-tag tw">คำตอบของคุณ</span>';
+      }
+      row.className = cls;
+      row.innerHTML = '<span class="letter mono">'+letter+'</span><span class="otext"></span>' + tagHtml;
+      row.querySelector('.otext').textContent = q.options[letter];
+      optsWrap.appendChild(row);
+    });
+    card.appendChild(optsWrap);
+
+    var exp = document.createElement('div');
+    exp.className = 'rc-exp';
+    exp.innerHTML = '<b>คำอธิบาย: </b><span></span>';
+    exp.querySelector('span').textContent = q.exp;
+    card.appendChild(exp);
+
+    list.appendChild(card);
+  });
+
+  $('reviewCount').textContent = 'แสดง ' + shown + ' จาก ' + state.questions.length + ' ข้อ';
+
+  if(shown === 0){
+    var empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;padding:40px;color:var(--ink-faint);';
+    empty.textContent = 'ไม่มีข้อที่ตรงกับตัวกรองนี้ 🎉';
+    list.appendChild(empty);
+  }
+}
+
+/* ---------------- back to top ---------------- */
+window.addEventListener('scroll', function(){
+  $('backToTop').classList.toggle('show', window.scrollY > 500);
+});
+$('backToTop').addEventListener('click', function(){
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+})();
+
+</script>
+
+</body>
+</html>
